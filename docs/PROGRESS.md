@@ -68,7 +68,7 @@
 - P03-T07..P03-T09 — Me endpoint, rate limiting và authentication tests đã hoàn thành.
 - P04-T01..P04-T08 — RBAC, permission model, auth guards, frontend helper, 403 handling và tests đã hoàn thành.
 - Task tiếp theo: **P05-T01 — API response standard**.
-- Các open questions về product vẫn được giữ nguyên; P02/P03 chỉ encode provisional baseline, chưa được coi là business sign-off.
+- Các open questions về product vẫn được giữ nguyên; P02/P03/P04 chỉ encode provisional baseline, chưa được coi là business sign-off.
 
 ## Tasks đã hoàn thành
 
@@ -123,8 +123,8 @@ Task được đánh dấu skip có chủ đích:
 
 - P03-T06 — Refresh token nếu cần: chưa cần cho web-only MVP; phải tạo decision/migration/test mới nếu có external client.
 
-Chi tiết acceptance/verification: `docs/tasks/PHASE-01-FOUNDATION.md`, `docs/tasks/PHASE-02-DATABASE.md` và
-`docs/tasks/PHASE-03-AUTHENTICATION.md`.
+Chi tiết acceptance/verification: `docs/tasks/PHASE-01-FOUNDATION.md`, `docs/tasks/PHASE-02-DATABASE.md`,
+`docs/tasks/PHASE-03-AUTHENTICATION.md` và `docs/tasks/PHASE-04-AUTHORIZATION.md`.
 
 ## Tasks đang thực hiện
 

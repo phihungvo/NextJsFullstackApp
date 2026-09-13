@@ -69,7 +69,7 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 | `src/`                                  | PRESENT   | App Router, foundation, auth/authz routes/modules |
 | `prisma/`                               | PRESENT   | Schema, migrations, seed và Session model         |
 | `public/`                               | NOT FOUND | Chưa có public assets                             |
-| `tests/`                                | PRESENT   | Vitest auth unit/route tests                      |
+| `tests/`                                | PRESENT   | Vitest auth/authz unit và route tests             |
 | `Dockerfile`                            | NOT FOUND | Chưa có container build                           |
 | `docker-compose.yml`                    | NOT FOUND | Chưa có MySQL/Redis runtime                       |
 | `.env.example`                          | PRESENT   | Placeholder environment contract                  |
