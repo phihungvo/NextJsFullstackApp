@@ -9,7 +9,7 @@
   P02 đã tạo provisional Prisma/MySQL domain schema, migration và development seed; P03 đã implement
   web authentication (login/logout/me, opaque session, Argon2id và Redis rate limiting); P04 đã implement
   server RBAC/permission guards và frontend capability helper; P05 đã implement versioned backend API,
-  còn feature UI chưa được implement.
+  P06 đã implement frontend route/UI baseline.
 - **Cách đọc:** `MUST` là baseline bắt buộc theo requirement/master prompt; `SHOULD` là ưu tiên nên có; `TBD` là vấn đề chưa đủ thông tin, không được tự chốt ngầm.
 - **Product proposition chưa được cung cấp:** các phần được đánh dấu **[PROVISIONAL]** phải được xác nhận trước khi public launch và trước khi khóa schema/domain chi tiết.
 
@@ -317,7 +317,7 @@ MVP chỉ được xem là product-ready khi tất cả mục sau được xác 
 - [x] User/role/permission management enforce quyền và không expose secret fields ở API/runtime scope.
 - [x] API response/error contract và traceability nhất quán ở API runtime scope.
 - [ ] Public pages có metadata/canonical/social cards/sitemap/robots/structured data phù hợp; dashboard noindex.
-- [ ] Loading/empty/error/unauthorized/forbidden/not-found và responsive/accessibility baseline đã review.
+- [x] Loading/empty/error/unauthorized/forbidden/not-found và responsive/accessibility baseline đã review ở implementation baseline P06; browser E2E vẫn thuộc P08.
 - [ ] Lint, typecheck, tests, build, Docker/CI verification pass theo scope.
 - [ ] Security, performance, backup/operational requirements đã có owner và evidence.
 

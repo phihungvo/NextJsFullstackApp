@@ -26,15 +26,15 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 ### 3.1 Project
 
 - Tên dự án: **chưa có trong repository**; master prompt vẫn dùng placeholder `[PROJECT_NAME]`.
-- Trạng thái hiện tại: đã có Next.js foundation, database baseline, authentication, authorization và
-  versioned Product/User/Role/Permission API; feature UI chưa được implement.
+- Trạng thái hiện tại: đã có Next.js foundation, database baseline, authentication, authorization,
+  versioned Product/User/Role/Permission API và P06 frontend baseline.
 - Tên working không được tự động trở thành tên chính thức. Cần chốt ở P00-T10 hoặc trước khi khởi tạo foundation.
 
 ### 3.2 Current architecture
 
 - **Hiện trạng:** đã có Next.js App Router skeleton, error/logging foundation, liveness endpoint,
-  Prisma/MySQL domain baseline, server-only authentication boundary, authorization service/guards và
-  versioned backend API cho Product/User/Role/Permission; feature UI chưa được implement.
+  Prisma/MySQL domain baseline, server-only authentication boundary, authorization service/guards,
+  versioned backend API cho Product/User/Role/Permission và frontend route/UI baseline của P06.
 - **Target:** một Next.js Fullstack Application duy nhất, không tách frontend React hoặc backend Spring Boot riêng.
 - **Module boundary target:** public/auth/dashboard route groups; feature modules; server services/repositories; shared infrastructure (`db`, `redis`, validation, API, security).
 
@@ -44,12 +44,12 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 | --------------- | ----------------------------------- | ----------------------------------- | -------------------------------------------------------- |
 | Framework       | Next.js 16.3.5                      | Next.js App Router                  | Đã scaffold và build pass                                |
 | Language        | TypeScript 5.9.3 strict             | TypeScript strict                   | `tsconfig.json` đã được Next.js hoàn thiện               |
-| UI              | NOT FOUND                           | Ant Design                          | Dùng cho dashboard/shared UI                             |
-| Server state    | NOT FOUND                           | TanStack Query                      | Chủ yếu cho client interactions                          |
-| Form/validation | NOT FOUND                           | React Hook Form + Zod               | Backend vẫn là nơi validate cuối                         |
+| UI              | Semantic HTML/CSS primitives (P06)  | Ant Design                          | Chưa thêm UI dependency; target integration còn mở       |
+| Server state    | Native fetch/client state (P06)     | TanStack Query                      | Có thể thay thế khi query complexity tăng                |
+| Form/validation | Native controlled forms + Zod API   | React Hook Form + Zod               | Backend vẫn là nơi validate cuối                         |
 | ORM/database    | Prisma 7.10.0 + schema              | Prisma + MySQL 8                    | Migration/seed/session đã tạo; đã verify temporary MySQL |
 | Cache/infra     | Redis client + login rate limit     | Redis                               | Không dùng thay cho nguồn dữ liệu chính                  |
-| Tests           | Vitest + auth/authz/API route tests | Vitest, Testing Library, Playwright | Component/E2E chưa có                                    |
+| Tests           | Vitest + auth/authz/API route tests | Vitest, Testing Library, Playwright | Component/E2E thuộc P08                                  |
 | Package manager | pnpm 12.4.1                         | pnpm                                | `pnpm-lock.yaml` đã tạo                                  |
 | Delivery        | NOT FOUND                           | Docker + CI/CD                      | Chưa có Dockerfile, Compose hay workflow                 |
 
@@ -132,7 +132,7 @@ filter động.
 
 ### 3.9 Frontend
 
-Server Component là mặc định cho public page và dashboard. Client Component chỉ dùng ở vùng cần state, event, browser API, hook hoặc thư viện client-only. Public layout, auth layout và dashboard layout là các boundary mục tiêu; dashboard phải responsive và xử lý loading/empty/error/unauthorized/forbidden/not-found.
+Server Component là mặc định cho public page và dashboard. Client Component chỉ dùng ở vùng cần state, event, browser API, hook hoặc thư viện client-only. P06 đã hiện thực public layout, auth layout và dashboard layout; dashboard responsive và xử lý loading/empty/error/unauthorized/forbidden/not-found.
 
 ### 3.10 SEO
 
@@ -142,7 +142,7 @@ Public content phải server-rendered/indexable, semantic, có Metadata API, can
 
 P03 đã thêm Vitest với unit/route tests cho password, opaque token và authentication contract; P04 bổ sung
 authorization service/helper/403 tests; P05 bổ sung API route/response tests và runtime smoke test trên
-MySQL 8 + Redis. Hiện `pnpm test` pass 25 tests. Target test strategy vẫn gồm component (Testing Library),
+MySQL 8 + Redis; P06 đã verify frontend build/route baseline. Hiện `pnpm test` pass 25 tests. Target test strategy vẫn gồm component (Testing Library),
 integration/API và E2E (Playwright), với coverage mở rộng cho dashboard và security. Typecheck, lint,
 format check, test và production build là quality gates của mỗi phase.
 
@@ -303,7 +303,7 @@ tạm thời cho web-only MVP nhưng vẫn phải revisit nếu xuất hiện cl
 | Mức độ | Vấn đề                                                                         | Impact                                                                                   | Hướng xử lý                                                            |
 | ------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | High   | Chưa có product brief/project name                                             | Có thể xây sai domain, copy và route                                                     | Product owner xác nhận trước khi khóa foundation                       |
-| High   | Chưa có feature UI/public IA                                                   | Product chưa thể release                                                                 | Tiếp tục P06/P07 theo dependency                                       |
+| High   | Public IA/SEO và product sign-off chưa chốt                                    | Có thể xây sai public content và metadata                                                | Tiếp tục P07 sau khi owner xác nhận                                    |
 | High   | Role matrix chi tiết và product proposition chưa sign-off                      | Ảnh hưởng authorization, UX và public scope                                              | Chốt ở P05/P07 trước release                                           |
 | Medium | Chưa có hosting, domain, traffic và SLO                                        | Không thể chốt deployment/performance budget                                             | Bổ sung trước Docker/CI/production review                              |
 | Medium | `AI_MASTER_PROMPT.md` kết thúc bằng câu chưa hoàn chỉnh                        | Tài liệu master có lỗi biên tập                                                          | Tạo documentation maintenance task; không tự sửa master trong Phase 00 |
@@ -327,7 +327,7 @@ tạm thời cho web-only MVP nhưng vẫn phải revisit nếu xuất hiện cl
 
 ## 13. Definition of ready cho các phase kế tiếp
 
-Trước P06 và trước khi khóa public product scope, tối thiểu phải có:
+Sau P06 và trước khi khóa public product scope, tối thiểu phải có:
 
 - [ ] Product name hoặc quyết định rõ placeholder được dùng đến khi nào.
 - [ ] Product proposition và MVP audience được product owner xác nhận hoặc ghi accepted provisional.

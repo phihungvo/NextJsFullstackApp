@@ -7,7 +7,7 @@ proposition are still provisional; see the discovery documents before adding dom
 
 - Next.js App Router + React + TypeScript strict
 - pnpm
-- Ant Design, TanStack Query, React Hook Form and Zod (UI integrations remain in P06)
+- Semantic HTML/CSS UI baseline in P06; Ant Design, TanStack Query and React Hook Form remain target integrations
 - Prisma + MySQL 8 and Redis
 - Vitest (auth/authz/API tests); Testing Library and Playwright remain for later phases
 
@@ -27,9 +27,9 @@ pnpm format:check
 pnpm build
 ```
 
-Current test scope covers auth, authorization, API response/error contract and API route behavior.
-Component/E2E coverage, Docker, CI/CD and formal security review remain in later phases. Do not treat
-the current baseline as production-ready.
+Current test scope covers auth, authorization, API response/error contract and API route behavior; P06
+adds the verified frontend route/UI baseline. Component/E2E coverage, Docker, CI/CD and formal security
+review remain in later phases. Do not treat the current baseline as production-ready.
 
 ## Documentation
 
@@ -38,3 +38,4 @@ the current baseline as production-ready.
 - `docs/PROGRESS.md` — phase/task progress
 - `docs/tasks/PHASE-00-DISCOVERY.md` — completed discovery task register
 - `docs/tasks/PHASE-05-BACKEND-API.md` — completed backend API task register
+- `docs/tasks/PHASE-06-FRONTEND.md` — completed frontend task register
