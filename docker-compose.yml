@@ -1,0 +1,116 @@
+name: ${COMPOSE_PROJECT_NAME:-nextjs-fullstack-dev}
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-app_db}
+      MYSQL_USER: ${MYSQL_USER:-app_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-app_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'mysqladmin ping -h 127.0.0.1 -u root -p"$${MYSQL_ROOT_PASSWORD}" --silent'
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis_dev_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    restart: "no"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: ${DATABASE_URL:-mysql://app_user:app_password@mysql:3306/app_db}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: ["pnpm", "db:deploy"]
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    init: true
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      DATABASE_URL: ${DATABASE_URL:-mysql://app_user:app_password@mysql:3306/app_db}
+      REDIS_URL: redis://redis:6379
+      AUTH_SECRET: ${AUTH_SECRET:?Set AUTH_SECRET to a value of at least 32 characters}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-development-admin-password}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-development-user-password}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - node_modules_dev:/app/node_modules
+      - generated_prisma_dev:/app/src/generated/prisma
+      - next_dev_cache:/app/.next
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    command: ["sh", "-c", "pnpm db:generate && pnpm dev"]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          node -e "fetch('http://127.0.0.1:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  seed:
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: ${DATABASE_URL:-mysql://app_user:app_password@mysql:3306/app_db}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-development-admin-password}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-development-user-password}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    command: ["pnpm", "db:seed"]
+
+volumes:
+  mysql_dev_data:
+  redis_dev_data:
+  node_modules_dev:
+  generated_prisma_dev:
+  next_dev_cache:

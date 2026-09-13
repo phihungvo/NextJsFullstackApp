@@ -318,7 +318,7 @@ MVP chỉ được xem là product-ready khi tất cả mục sau được xác 
 - [x] API response/error contract và traceability nhất quán ở API runtime scope.
 - [ ] Public pages có metadata/canonical/social cards/sitemap/robots/structured data phù hợp; dashboard noindex.
 - [x] Loading/empty/error/unauthorized/forbidden/not-found và responsive/accessibility baseline đã review ở implementation baseline P06; browser E2E vẫn thuộc P08.
-- [ ] Lint, typecheck, tests, build, Docker/CI verification pass theo scope.
+- [x] Lint, typecheck, tests, build và Docker verification pass theo scope; CI vẫn thuộc P11.
 - [ ] Security, performance, backup/operational requirements đã có owner và evidence.
 
 ## 11. Traceability với Project Overview

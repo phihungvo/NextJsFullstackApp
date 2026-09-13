@@ -13,24 +13,25 @@
 - **P04:** 8 DONE.
 - **P05:** 10 DONE.
 - **P06:** 16 DONE, 0 TODO, 0 blocked.
+- **P10:** 9 DONE, completed out-of-order theo yêu cầu Docker.
 
 ## Phase status
 
-| Phase | Tên                            | Trạng thái | Ghi chú                                                        |
-| ----- | ------------------------------ | ---------- | -------------------------------------------------------------- |
-| P00   | Discovery & Project Definition | DONE       | Docs-only; product decisions còn provisional                   |
-| P01   | Foundation                     | DONE       | Foundation quality gates đã pass                               |
-| P02   | Database                       | DONE       | Provisional schema, migration và seed đã verify                |
-| P03   | Authentication                 | DONE       | Web-only opaque session; refresh token skipped có chủ đích     |
-| P04   | Authorization                  | DONE       | RBAC/permission baseline và backend tests đã pass              |
-| P05   | Backend API                    | DONE       | API contract, CRUD, validation, pagination/sort/filter đã pass |
-| P06   | Frontend                       | DONE       | Tất cả 16 task đã implement, verify và AUTO-APPROVED           |
-| P07   | SEO                            | TODO       | Metadata/canonical/social/sitemap/robots/structured data       |
-| P08   | Testing                        | TODO       | Component/E2E/regression mở rộng theo scope                    |
-| P09   | Security                       | TODO       | Formal security audit                                          |
-| P10   | Docker                         | TODO       | Production container/Compose                                   |
-| P11   | CI/CD                          | TODO       | Pipeline quality gates                                         |
-| P12   | Final Review                   | TODO       | Chỉ DONE khi toàn bộ acceptance đạt                            |
+| Phase | Tên                            | Trạng thái | Ghi chú                                                            |
+| ----- | ------------------------------ | ---------- | ------------------------------------------------------------------ |
+| P00   | Discovery & Project Definition | DONE       | Docs-only; product decisions còn provisional                       |
+| P01   | Foundation                     | DONE       | Foundation quality gates đã pass                                   |
+| P02   | Database                       | DONE       | Provisional schema, migration và seed đã verify                    |
+| P03   | Authentication                 | DONE       | Web-only opaque session; refresh token skipped có chủ đích         |
+| P04   | Authorization                  | DONE       | RBAC/permission baseline và backend tests đã pass                  |
+| P05   | Backend API                    | DONE       | API contract, CRUD, validation, pagination/sort/filter đã pass     |
+| P06   | Frontend                       | DONE       | Tất cả 16 task đã implement, verify và AUTO-APPROVED               |
+| P07   | SEO                            | TODO       | Metadata/canonical/social/sitemap/robots/structured data           |
+| P08   | Testing                        | TODO       | Component/E2E/regression mở rộng theo scope                        |
+| P09   | Security                       | TODO       | Formal security audit                                              |
+| P10   | Docker                         | DONE       | Dev/production Compose, standalone image, migration và healthcheck |
+| P11   | CI/CD                          | TODO       | Pipeline quality gates                                             |
+| P12   | Final Review                   | TODO       | Chỉ DONE khi toàn bộ acceptance đạt                                |
 
 ## P06 — Frontend đã hoàn tất
 
@@ -52,6 +53,9 @@
 - P06-T16 — Responsive.
 
 Chi tiết implementation/acceptance: `docs/tasks/PHASE-06-FRONTEND.md`.
+
+P10 cũng đã hoàn tất out-of-order: xem `docs/tasks/PHASE-10-DOCKER.md` và
+`docs/09_DOCKER_DEPLOYMENT.md`.
 
 ## P06 verification
 
@@ -108,5 +112,6 @@ taxonomy từ các route placeholder khi product decision vẫn mở.
 ## Project status note
 
 P00–P06 đã có discovery, foundation, database, authentication, authorization, backend API và frontend
-baseline. Project vẫn chưa production-ready vì product sign-off, P07 SEO, P08 testing expansion, P09
-formal security, P10 Docker, P11 CI/CD và P12 final review còn lại.
+baseline; P10 Docker đã hoàn tất out-of-order với verification thực tế trên Docker Desktop. Project vẫn
+chưa production-ready vì product sign-off, P07 SEO, P08 testing expansion, P09 formal security, P11 CI/CD
+và P12 final review còn lại.

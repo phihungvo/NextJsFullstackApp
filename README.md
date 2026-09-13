@@ -28,8 +28,27 @@ pnpm build
 ```
 
 Current test scope covers auth, authorization, API response/error contract and API route behavior; P06
-adds the verified frontend route/UI baseline. Component/E2E coverage, Docker, CI/CD and formal security
-review remain in later phases. Do not treat the current baseline as production-ready.
+adds the verified frontend route/UI baseline. Component/E2E coverage, CI/CD and formal security review
+remain in later phases. Do not treat the current baseline as production-ready.
+
+## Docker
+
+Development với hot reload, MySQL, Redis, migration và seed:
+
+```bash
+npm run docker:dev
+npm run docker:dev:seed
+```
+
+Production-like standalone image:
+
+```bash
+cp docker/.env.prod.example docker/.env.prod
+# thay credential/URL trong docker/.env.prod
+npm run docker:prod
+```
+
+Chi tiết kiến trúc, volume, healthcheck, migration và vận hành: `docs/09_DOCKER_DEPLOYMENT.md`.
 
 ## Documentation
 
@@ -39,3 +58,4 @@ review remain in later phases. Do not treat the current baseline as production-r
 - `docs/tasks/PHASE-00-DISCOVERY.md` — completed discovery task register
 - `docs/tasks/PHASE-05-BACKEND-API.md` — completed backend API task register
 - `docs/tasks/PHASE-06-FRONTEND.md` — completed frontend task register
+- `docs/tasks/PHASE-10-DOCKER.md` — completed Docker task register

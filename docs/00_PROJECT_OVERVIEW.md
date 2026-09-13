@@ -51,7 +51,7 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 | Cache/infra     | Redis client + login rate limit     | Redis                               | Không dùng thay cho nguồn dữ liệu chính                  |
 | Tests           | Vitest + auth/authz/API route tests | Vitest, Testing Library, Playwright | Component/E2E thuộc P08                                  |
 | Package manager | pnpm 12.4.1                         | pnpm                                | `pnpm-lock.yaml` đã tạo                                  |
-| Delivery        | NOT FOUND                           | Docker + CI/CD                      | Chưa có Dockerfile, Compose hay workflow                 |
+| Delivery        | Dockerfile + Compose (P10)          | Docker + CI/CD                      | Docker đã có; CI/CD vẫn chưa tích hợp                    |
 
 ### 3.4 Repository structure audit
 
@@ -73,10 +73,10 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 | `src/server/services/`                  | PRESENT   | Product/User/Role/Permission use cases            |
 | `src/server/repositories/`              | PRESENT   | Prisma data access và public field selections     |
 | `prisma/`                               | PRESENT   | Schema, migrations, seed và Session model         |
-| `public/`                               | NOT FOUND | Chưa có public assets                             |
+| `public/`                               | PRESENT   | Static asset directory; hiện là baseline rỗng     |
 | `tests/`                                | PRESENT   | Vitest auth/authz unit và route tests             |
-| `Dockerfile`                            | NOT FOUND | Chưa có container build                           |
-| `docker-compose.yml`                    | NOT FOUND | Chưa có MySQL/Redis runtime                       |
+| `Dockerfile`                            | PRESENT   | Multi-stage development/standalone/migrator       |
+| `docker-compose.yml`                    | PRESENT   | Development app + MySQL + Redis + migration       |
 | `.env.example`                          | PRESENT   | Placeholder environment contract                  |
 | `.github/`                              | NOT FOUND | Chưa có CI                                        |
 
@@ -148,7 +148,11 @@ format check, test và production build là quality gates của mỗi phase.
 
 ### 3.12 Docker
 
-Hiện chưa có Docker. Target gồm app, MySQL và Redis trong Compose, healthcheck, network, persistent volume phù hợp, environment injection và app image multi-stage chạy non-root với standalone output nếu tương thích.
+P10 đã triển khai Docker thực tế. `Dockerfile` dùng multi-stage `deps`, `development`, `builder`,
+`migrator` và non-root `runner` với Next `output: "standalone"`. `docker-compose.yml` dành cho
+development có hot reload, MySQL 8.4, Redis 7.4, named volumes, healthchecks, migration service và seed
+profile. `docker-compose.prod.yml` không publish MySQL/Redis ra host, chạy migration trước app và inject
+runtime environment qua Compose. Chi tiết ở `docs/09_DOCKER_DEPLOYMENT.md`.
 
 ### 3.13 CI/CD
 
@@ -177,7 +181,8 @@ Mục tiêu baseline cần xác nhận:
 - API `/api/v1` với validation, response/error contract, traceability và server-side authorization
   (P05 đã implement).
 - Public SEO shell và private dashboard `noindex`.
-- Quality baseline: strict TypeScript, lint/format, tests, security headers, rate-limit abstraction, health check, Docker và CI theo các phase sau.
+- Quality baseline: strict TypeScript, lint/format, tests, security headers, rate-limit abstraction,
+  health check và Docker đã có; CI vẫn thuộc phase sau.
 
 ### 4.3 Ngoài phạm vi MVP
 
@@ -305,7 +310,7 @@ tạm thời cho web-only MVP nhưng vẫn phải revisit nếu xuất hiện cl
 | High   | Chưa có product brief/project name                                             | Có thể xây sai domain, copy và route                                                     | Product owner xác nhận trước khi khóa foundation                       |
 | High   | Public IA/SEO và product sign-off chưa chốt                                    | Có thể xây sai public content và metadata                                                | Tiếp tục P07 sau khi owner xác nhận                                    |
 | High   | Role matrix chi tiết và product proposition chưa sign-off                      | Ảnh hưởng authorization, UX và public scope                                              | Chốt ở P05/P07 trước release                                           |
-| Medium | Chưa có hosting, domain, traffic và SLO                                        | Không thể chốt deployment/performance budget                                             | Bổ sung trước Docker/CI/production review                              |
+| Medium | Chưa có hosting, domain, traffic và SLO                                        | Không thể chốt deployment/performance budget                                             | Bổ sung trước CI/production review                                     |
 | Medium | `AI_MASTER_PROMPT.md` kết thúc bằng câu chưa hoàn chỉnh                        | Tài liệu master có lỗi biên tập                                                          | Tạo documentation maintenance task; không tự sửa master trong Phase 00 |
 | Medium | Git remote/commit workflow chưa được xác nhận                                  | Không có release baseline/CI ownership rõ ràng                                           | Xác minh owner/repository setup trước CI/CD                            |
 | Low    | Master prompt vừa liệt kê `docs/15_PROGRESS.md` vừa yêu cầu `docs/PROGRESS.md` | Dùng `docs/PROGRESS.md` theo workflow chi tiết, `AI_START_PROMPT.md` và yêu cầu hiện tại | Nếu đổi path sẽ ảnh hưởng task tooling/link                            | Ghi nhận, chưa cần block P00 |

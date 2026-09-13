@@ -6,8 +6,12 @@ coverage/
 .env
 .env.*
 !.env.example
+!docker/.env.dev.example
+!docker/.env.prod.example
 *.log
 *.tsbuildinfo
 .DS_Store
 
 /src/generated/prisma
+docker/.env.dev
+docker/.env.prod

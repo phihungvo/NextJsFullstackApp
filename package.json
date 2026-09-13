@@ -21,6 +21,13 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:validate": "prisma validate",
+    "docker:dev": "docker compose --env-file docker/.env.dev.example -f docker-compose.yml up --build",
+    "docker:dev:down": "docker compose --env-file docker/.env.dev.example -f docker-compose.yml down",
+    "docker:dev:seed": "docker compose --env-file docker/.env.dev.example --profile tools -f docker-compose.yml run --rm seed",
+    "docker:dev:logs": "docker compose --env-file docker/.env.dev.example -f docker-compose.yml logs -f app",
+    "docker:prod": "docker compose --env-file docker/.env.prod -f docker-compose.prod.yml up --build -d",
+    "docker:prod:down": "docker compose --env-file docker/.env.prod -f docker-compose.prod.yml down",
+    "docker:prod:logs": "docker compose --env-file docker/.env.prod -f docker-compose.prod.yml logs -f app",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },
