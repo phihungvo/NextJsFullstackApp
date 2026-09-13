@@ -2,8 +2,8 @@
 
 ## 1. Trạng thái tài liệu
 
-- **Trạng thái:** Discovery baseline, cập nhật sau khi hoàn tất P01 — Foundation.
-- **Ngày rà soát:** 2026-09-13.
+- **Trạng thái:** Implementation baseline, cập nhật sau khi hoàn tất P04 — Authorization.
+- **Ngày rà soát:** 2026-09-14.
 - **Mức độ tin cậy:**
   - **Đã xác nhận:** hiện trạng repository và các quy tắc trong `docs/AI_MASTER_PROMPT.md`, `docs/AI_START_PROMPT.md`.
   - **Bắt buộc theo master prompt:** stack, các domain foundation và các nguyên tắc kiến trúc được nêu trong tài liệu master.
@@ -13,7 +13,7 @@
 
 ## 2. Tóm tắt dự án
 
-Đây là nền tảng web **Next.js Fullstack** theo định hướng **SEO-first, production-ready và Modular Monolith**. Next.js App Router đảm nhiệm cả UI và backend boundary; business logic được tách thành validation, authentication, authorization, service và repository; Prisma truy cập MySQL 8; Redis phục vụ các nhu cầu cache/rate limiting/session-related data phù hợp.
+Đây là nền tảng web **Next.js Fullstack** theo định hướng **SEO-first, production-ready và Modular Monolith**. Next.js App Router đảm nhiệm cả UI và backend boundary; business logic được tách thành validation, authentication, authorization, service và repository; Prisma truy cập MySQL 8; Redis phục vụ rate limiting và các nhu cầu cache/session-related data phù hợp.
 
 Do repository chưa có business brief, tên dự án và domain thương mại chưa được xác nhận. Working definition để lập kế hoạch hiện tại là:
 
@@ -26,66 +26,82 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 ### 3.1 Project
 
 - Tên dự án: **chưa có trong repository**; master prompt vẫn dùng placeholder `[PROJECT_NAME]`.
-- Trạng thái hiện tại: đã có Next.js foundation tối thiểu; domain/infrastructure chưa được implement.
+- Trạng thái hiện tại: đã có Next.js foundation, database baseline, authentication và authorization
+  baseline; product/user API và feature UI chưa được implement.
 - Tên working không được tự động trở thành tên chính thức. Cần chốt ở P00-T10 hoặc trước khi khởi tạo foundation.
 
 ### 3.2 Current architecture
 
-- **Hiện trạng:** đã có Next.js App Router skeleton, error/logging foundation và liveness endpoint; chưa có feature/domain module, database hoặc runtime dependency.
+- **Hiện trạng:** đã có Next.js App Router skeleton, error/logging foundation, liveness endpoint,
+  Prisma/MySQL domain baseline, server-only authentication boundary và authorization service/guards;
+  product/user API và feature UI chưa được implement.
 - **Target:** một Next.js Fullstack Application duy nhất, không tách frontend React hoặc backend Spring Boot riêng.
 - **Module boundary target:** public/auth/dashboard route groups; feature modules; server services/repositories; shared infrastructure (`db`, `redis`, validation, API, security).
 
 ### 3.3 Technology stack
 
-| Hạng mục        | Hiện trạng đã xác nhận  | Target theo master prompt           | Ghi chú                                            |
-| --------------- | ----------------------- | ----------------------------------- | -------------------------------------------------- |
-| Framework       | Next.js 16.3.5          | Next.js App Router                  | Đã scaffold và build pass                          |
-| Language        | TypeScript 5.9.3 strict | TypeScript strict                   | `tsconfig.json` đã được Next.js hoàn thiện         |
-| UI              | NOT FOUND               | Ant Design                          | Dùng cho dashboard/shared UI                       |
-| Server state    | NOT FOUND               | TanStack Query                      | Chủ yếu cho client interactions                    |
-| Form/validation | NOT FOUND               | React Hook Form + Zod               | Backend vẫn là nơi validate cuối                   |
-| ORM/database    | Prisma 7.10.0 + schema  | Prisma + MySQL 8                    | Migration/seed đã tạo; runtime verification cần DB |
-| Cache/infra     | NOT FOUND               | Redis                               | Không dùng thay cho nguồn dữ liệu chính            |
-| Tests           | NOT FOUND               | Vitest, Testing Library, Playwright | Chưa có test runner                                |
-| Package manager | pnpm 12.4.1             | pnpm                                | `pnpm-lock.yaml` đã tạo                            |
-| Delivery        | NOT FOUND               | Docker + CI/CD                      | Chưa có Dockerfile, Compose hay workflow           |
+| Hạng mục        | Hiện trạng đã xác nhận          | Target theo master prompt           | Ghi chú                                                  |
+| --------------- | ------------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| Framework       | Next.js 16.3.5                  | Next.js App Router                  | Đã scaffold và build pass                                |
+| Language        | TypeScript 5.9.3 strict         | TypeScript strict                   | `tsconfig.json` đã được Next.js hoàn thiện               |
+| UI              | NOT FOUND                       | Ant Design                          | Dùng cho dashboard/shared UI                             |
+| Server state    | NOT FOUND                       | TanStack Query                      | Chủ yếu cho client interactions                          |
+| Form/validation | NOT FOUND                       | React Hook Form + Zod               | Backend vẫn là nơi validate cuối                         |
+| ORM/database    | Prisma 7.10.0 + schema          | Prisma + MySQL 8                    | Migration/seed/session đã tạo; đã verify temporary MySQL |
+| Cache/infra     | Redis client + login rate limit | Redis                               | Không dùng thay cho nguồn dữ liệu chính                  |
+| Tests           | Vitest + auth unit/route tests  | Vitest, Testing Library, Playwright | Component/E2E chưa có                                    |
+| Package manager | pnpm 12.4.1                     | pnpm                                | `pnpm-lock.yaml` đã tạo                                  |
+| Delivery        | NOT FOUND                       | Docker + CI/CD                      | Chưa có Dockerfile, Compose hay workflow                 |
 
 ### 3.4 Repository structure audit
 
-| Path                               | Kết quả   | Ý nghĩa                                         |
-| ---------------------------------- | --------- | ----------------------------------------------- |
-| `docs/AI_MASTER_PROMPT.md`         | PRESENT   | Quy tắc cấp cao đã đọc toàn bộ                  |
-| `docs/AI_START_PROMPT.md`          | PRESENT   | Workflow khởi tạo đã đọc toàn bộ                |
-| `docs/00_PROJECT_OVERVIEW.md`      | CREATED   | Tài liệu này                                    |
-| `docs/01_PRODUCT_REQUIREMENTS.md`  | CREATED   | Product baseline                                |
-| `docs/PROGRESS.md`                 | CREATED   | Theo dõi phase/task                             |
-| `docs/tasks/PHASE-00-DISCOVERY.md` | CREATED   | Task register Phase 00                          |
-| `package.json`                     | PRESENT   | Foundation scripts/dependencies                 |
-| `src/`                             | PRESENT   | App Router skeleton, foundation và health route |
-| `prisma/`                          | PRESENT   | Prisma schema, migration và development seed    |
-| `public/`                          | NOT FOUND | Chưa có public assets                           |
-| `tests/`                           | NOT FOUND | Chưa có test; test runner thuộc P08             |
-| `Dockerfile`                       | NOT FOUND | Chưa có container build                         |
-| `docker-compose.yml`               | NOT FOUND | Chưa có MySQL/Redis runtime                     |
-| `.env.example`                     | PRESENT   | Placeholder environment contract                |
-| `.github/`                         | NOT FOUND | Chưa có CI                                      |
+| Path                                    | Kết quả   | Ý nghĩa                                           |
+| --------------------------------------- | --------- | ------------------------------------------------- |
+| `docs/AI_MASTER_PROMPT.md`              | PRESENT   | Quy tắc cấp cao đã đọc toàn bộ                    |
+| `docs/AI_START_PROMPT.md`               | PRESENT   | Workflow khởi tạo đã đọc toàn bộ                  |
+| `docs/00_PROJECT_OVERVIEW.md`           | CREATED   | Tài liệu này                                      |
+| `docs/01_PRODUCT_REQUIREMENTS.md`       | CREATED   | Product baseline                                  |
+| `docs/PROGRESS.md`                      | CREATED   | Theo dõi phase/task                               |
+| `docs/tasks/PHASE-00-DISCOVERY.md`      | CREATED   | Task register Phase 00                            |
+| `docs/tasks/PHASE-03-AUTHENTICATION.md` | CREATED   | Task register Phase 03                            |
+| `docs/tasks/PHASE-04-AUTHORIZATION.md`  | CREATED   | Task register Phase 04                            |
+| `package.json`                          | PRESENT   | Foundation scripts/dependencies                   |
+| `src/`                                  | PRESENT   | App Router, foundation, auth/authz routes/modules |
+| `prisma/`                               | PRESENT   | Schema, migrations, seed và Session model         |
+| `public/`                               | NOT FOUND | Chưa có public assets                             |
+| `tests/`                                | PRESENT   | Vitest auth unit/route tests                      |
+| `Dockerfile`                            | NOT FOUND | Chưa có container build                           |
+| `docker-compose.yml`                    | NOT FOUND | Chưa có MySQL/Redis runtime                       |
+| `.env.example`                          | PRESENT   | Placeholder environment contract                  |
+| `.github/`                              | NOT FOUND | Chưa có CI                                        |
 
-Không phát hiện Git metadata hợp lệ tại workspace root (`git status` không chạy được vì đây không phải Git repository). Không có code hiện tại để refactor, nhưng Git initialization/remote là một việc cần xác định ở foundation/DevOps.
+Git metadata hiện diện tại workspace root và `git status`/`git rev-parse` hoạt động. Remote/commit
+workflow của repository chưa được xác nhận; cần chốt trước khi thiết lập CI/CD hoặc release baseline.
 
 ### 3.5 Database
 
 Target database là MySQL 8 qua Prisma. Prisma 7.10.0/configuration và server-only client boundary đã
-được thiết lập ở P02-T01. Baseline provisional hiện có `User`, `Role`, `Permission`, `Product`, hai
-explicit many-to-many join tables, foreign key, unique constraint, index, timestamps và soft-delete
-fields cho User/Product. Migration/seed đã tạo; runtime verification cần MySQL service.
+được thiết lập ở P02-T01. Baseline provisional hiện có `User`, `Role`, `Permission`, `Product`, `Session`,
+hai explicit many-to-many join tables, foreign key, unique constraint, index, timestamps và soft-delete
+fields cho User/Product. `Session` được thêm bằng migration riêng ở P03, lưu HMAC token hash, expiry,
+revoke state và last-seen tracking; migration/seed đã được runtime verify trên temporary MySQL.
 
 ### 3.6 Authentication
 
-Target authentication phải dùng cookie bảo mật (`HttpOnly`, `Secure` trong production, `SameSite` phù hợp), password hashing ưu tiên Argon2id, secret từ environment, expiry, logout/revoke và rate limiting. Việc chọn session cookie thuần hay access/refresh token rotation là **chưa chốt**; xem open questions trong mục 12.
+P03 đã triển khai authentication web-first bằng opaque database-backed session. Cookie chỉ chứa random
+token; database lưu HMAC-SHA-256 hash với `AUTH_SECRET`, expiry 8 giờ, revoke state và `lastSeenAt`.
+Cookie dùng `HttpOnly`, `SameSite=Lax`, `Path=/`, thêm `Secure` và tên `__Host-session` ở production.
+Login dùng Argon2id, generic credential error và Redis rate limit 5 attempts/60 giây theo email + client
+address. Refresh-token pair/endpoint được skip có chủ đích vì MVP chỉ có web client; chỉ mở lại khi có
+external client hoặc requirement long-lived session.
 
 ### 3.7 Authorization
 
-Target là RBAC kết hợp permission-based authorization. Backend quyết định cuối cùng với `requireAuth()`, `requirePermission()` và deny-by-default; frontend chỉ dùng permission để điều chỉnh UX, không dùng làm security boundary.
+P04 đã triển khai RBAC kết hợp permission-based authorization. `requireAuth()` kiểm tra session trước;
+`getUserPermissionCodes()`/`hasPermission()` resolve authoritative data từ MySQL; `requirePermission()`
+trả `401` cho anonymous và `403` cho user thiếu quyền qua centralized error contract. `can()` ở
+`src/features/auth/permissions.ts` chỉ là UX helper, không phải security boundary. Admin seed có toàn bộ
+16 permission baseline; User seed có `PRODUCT_VIEW`.
 
 ### 3.8 API
 
@@ -101,7 +117,11 @@ Public content phải server-rendered/indexable, semantic, có Metadata API, can
 
 ### 3.11 Testing
 
-Hiện chưa có test hoặc test runner. Target test strategy gồm unit (Vitest), component (Testing Library), integration/API và E2E (Playwright), với coverage cho authentication, authorization, product CRUD/validation/pagination/sorting/filtering và security non-exposure. Typecheck, lint, format check và production build của foundation hiện đã pass.
+P03 đã thêm Vitest với unit/route tests cho password, opaque token và authentication contract; P04 bổ sung
+authorization service/helper/403 tests. Target test
+strategy vẫn gồm component (Testing Library), integration/API và E2E (Playwright), với coverage mở rộng
+cho authorization, product CRUD/validation/pagination/sorting/filtering và security non-exposure.
+Typecheck, lint, format check, test và production build cần tiếp tục là quality gates của mỗi phase.
 
 ### 3.12 Docker
 
@@ -124,8 +144,8 @@ Mục tiêu baseline cần xác nhận:
 
 ### 4.2 Phạm vi MVP baseline
 
-- Authentication: login, logout, current user (`me`), session lifecycle.
-- Authorization: User/Role/Permission, RBAC và permission checks.
+- Authentication: login, logout, current user (`me`), opaque DB session lifecycle và Redis login rate limit (P03 đã implement).
+- Authorization: User/Role/Permission, RBAC, server guards và deny-by-default checks (P04 đã implement).
 - Product catalog: list/detail/create/update/delete với pagination, sorting, filtering, search foundation.
 - User management: list/detail/create/update/status/assign role, không expose secret fields.
 - Role/permission management theo quyền được cấp.
@@ -181,14 +201,16 @@ Không tạo hai top-level app giả tạo `frontend/` và `backend/`; boundary 
 
 ## 6. Domain foundation
 
-| Entity       | Vai trò baseline                        | Điểm cần chốt                              |
-| ------------ | --------------------------------------- | ------------------------------------------ |
-| `User`       | Account đăng nhập và actor của hệ thống | Status, profile fields, lifecycle          |
-| `Role`       | Nhóm quyền                              | Naming/code, system role protection        |
-| `Permission` | Capability có thể mở rộng               | Catalog permission và seed policy          |
-| `Product`    | Đối tượng CRUD trung tâm                | Business meaning, fields, lifecycle/status |
+| Entity       | Vai trò baseline                          | Điểm cần chốt                               |
+| ------------ | ----------------------------------------- | ------------------------------------------- |
+| `User`       | Account đăng nhập và actor của hệ thống   | Status, profile fields, lifecycle           |
+| `Role`       | Nhóm quyền                                | Naming/code, system role protection         |
+| `Permission` | Capability có thể mở rộng                 | Catalog permission và seed policy           |
+| `Product`    | Đối tượng CRUD trung tâm                  | Business meaning, fields, lifecycle/status  |
+| `Session`    | Opaque authentication session của web MVP | Retention/cleanup, external-client strategy |
 
-Chưa tạo thêm entity ngoài bốn entity foundation cho đến khi có requirement và data flow rõ ràng.
+`Session` là infrastructure entity được thêm ở P03 để phục vụ authentication; không mở rộng thêm domain
+entity ngoài baseline trên cho đến khi có requirement và data flow rõ ràng.
 
 ## 7. NFR baseline
 
@@ -242,44 +264,47 @@ P07 SEO + P08 Testing + P09 Security
 P10 Docker -> P11 CI/CD -> P12 Final Review
 ```
 
-P01-T01 đã được thực hiện trên provisional baseline sau khi review open questions. Các câu hỏi business vẫn là dependency trước P02 schema, P03 session/auth và public launch; không được coi là đã resolved chỉ vì foundation build pass.
+P01-T01, P02, P03 và P04 đã được thực hiện trên provisional baseline sau khi review open questions. Các câu hỏi
+business vẫn là dependency trước public launch; session strategy đã có quyết định kỹ thuật tạm thời cho
+web-only MVP nhưng vẫn phải revisit nếu xuất hiện client ngoài web.
 
 ## 11. Technical debt và rủi ro hiện tại
 
 | Mức độ | Vấn đề                                                                         | Impact                                                                                   | Hướng xử lý                                                            |
 | ------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | High   | Chưa có product brief/project name                                             | Có thể xây sai domain, copy và route                                                     | Product owner xác nhận trước khi khóa foundation                       |
-| High   | Chưa có auth/API/feature implementation                                        | Database đã có nhưng product chưa thể release                                            | Tiếp tục P03/P04/P05 theo dependency                                   |
-| High   | Chưa có auth/session model và role matrix                                      | Ảnh hưởng schema, API và UX                                                              | Chốt ở P03/P04 trước database finalization nếu cần                     |
+| High   | Chưa có API/feature implementation                                             | Product chưa thể release                                                                 | Tiếp tục P05/P06 theo dependency                                       |
+| High   | Role matrix chi tiết và product proposition chưa sign-off                      | Ảnh hưởng authorization, UX và public scope                                              | Chốt ở P05/P07 trước release                                           |
 | Medium | Chưa có hosting, domain, traffic và SLO                                        | Không thể chốt deployment/performance budget                                             | Bổ sung trước Docker/CI/production review                              |
 | Medium | `AI_MASTER_PROMPT.md` kết thúc bằng câu chưa hoàn chỉnh                        | Tài liệu master có lỗi biên tập                                                          | Tạo documentation maintenance task; không tự sửa master trong Phase 00 |
-| Medium | Workspace chưa có Git metadata hợp lệ                                          | Không có baseline/commit workflow                                                        | Xác minh owner/repository setup ở foundation                           |
+| Medium | Git remote/commit workflow chưa được xác nhận                                  | Không có release baseline/CI ownership rõ ràng                                           | Xác minh owner/repository setup trước CI/CD                            |
 | Low    | Master prompt vừa liệt kê `docs/15_PROGRESS.md` vừa yêu cầu `docs/PROGRESS.md` | Dùng `docs/PROGRESS.md` theo workflow chi tiết, `AI_START_PROMPT.md` và yêu cầu hiện tại | Nếu đổi path sẽ ảnh hưởng task tooling/link                            | Ghi nhận, chưa cần block P00 |
 
 ## 12. Open questions và assumptions cần xác nhận
 
-| ID       | Câu hỏi/chưa rõ                                                      | Assumption tạm thời                                                               | Impact nếu thay đổi                           | Trạng thái                   |
-| -------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------------- |
-| OQ-00-01 | Tên chính thức và brand/domain là gì?                                | Dùng `[PROJECT_NAME]` trong tài liệu nội bộ                                       | Ảnh hưởng package, metadata, URLs, deployment | BLOCKING trước public launch |
-| OQ-00-02 | Product là catalog nội bộ, SaaS quản trị hay domain thương mại khác? | Dùng catalog management làm MVP foundation                                        | Có thể đổi entity, workflow, public IA        | BLOCKING product sign-off    |
-| OQ-00-03 | Ai là user ngoài Admin/User seed?                                    | Admin và normal operator là baseline                                              | Ảnh hưởng role matrix và onboarding           | OPEN                         |
-| OQ-00-04 | Product cần field, currency, locale, media, inventory nào?           | P02 provisional: field tối thiểu, currency default `USD`, chưa có media/inventory | Ảnh hưởng API/form/SEO                        | OPEN — sign-off trước public |
-| OQ-00-05 | Product `status` có các giá trị nào và có draft/publish không?       | P02 provisional: `DRAFT`/`PUBLISHED`/`ARCHIVED`, visibility `PRIVATE`/`PUBLIC`    | Ảnh hưởng workflow/cache/SEO                  | OPEN — sign-off trước public |
-| OQ-00-06 | Public product detail có tồn tại không?                              | Public SEO shell có khả năng mở rộng, chưa expose Product mặc định                | Ảnh hưởng slug, indexability, structured data | OPEN                         |
-| OQ-00-07 | Session dùng cookie session hay access/refresh tokens?               | Cookie-first; chọn mô hình cụ thể ở P03                                           | Ảnh hưởng DB/Redis/API rotation               | BLOCKING P03                 |
-| OQ-00-08 | Hosting, domain, email provider và observability provider?           | Chưa tích hợp external service                                                    | Ảnh hưởng env, Docker, CI/CD, monitoring      | OPEN                         |
-| OQ-00-09 | Availability, traffic, p95 latency, backup/RTO/RPO mục tiêu?         | Dùng qualitative NFR cho đến khi có baseline                                      | Ảnh hưởng infra/caching/capacity              | OPEN                         |
-| OQ-00-10 | Có yêu cầu multi-tenant, audit log, retention hoặc compliance không? | Không implement ở MVP                                                             | Có thể làm thay đổi data model/security       | OPEN                         |
+| ID       | Câu hỏi/chưa rõ                                                      | Assumption tạm thời                                                               | Impact nếu thay đổi                           | Trạng thái                                |
+| -------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- | --------------------------------------------- | ----------------------------------------- |
+| OQ-00-01 | Tên chính thức và brand/domain là gì?                                | Dùng `[PROJECT_NAME]` trong tài liệu nội bộ                                       | Ảnh hưởng package, metadata, URLs, deployment | BLOCKING trước public launch              |
+| OQ-00-02 | Product là catalog nội bộ, SaaS quản trị hay domain thương mại khác? | Dùng catalog management làm MVP foundation                                        | Có thể đổi entity, workflow, public IA        | BLOCKING product sign-off                 |
+| OQ-00-03 | Ai là user ngoài Admin/User seed?                                    | Admin và normal operator là baseline                                              | Ảnh hưởng role matrix và onboarding           | OPEN                                      |
+| OQ-00-04 | Product cần field, currency, locale, media, inventory nào?           | P02 provisional: field tối thiểu, currency default `USD`, chưa có media/inventory | Ảnh hưởng API/form/SEO                        | OPEN — sign-off trước public              |
+| OQ-00-05 | Product `status` có các giá trị nào và có draft/publish không?       | P02 provisional: `DRAFT`/`PUBLISHED`/`ARCHIVED`, visibility `PRIVATE`/`PUBLIC`    | Ảnh hưởng workflow/cache/SEO                  | OPEN — sign-off trước public              |
+| OQ-00-06 | Public product detail có tồn tại không?                              | Public SEO shell có khả năng mở rộng, chưa expose Product mặc định                | Ảnh hưởng slug, indexability, structured data | OPEN                                      |
+| OQ-00-07 | Session dùng cookie session hay access/refresh tokens?               | Opaque DB session 8 giờ cho web-only MVP; không refresh pair                      | Ảnh hưởng DB/Redis/API rotation               | RESOLVED FOR MVP; revisit external client |
+| OQ-00-08 | Hosting, domain, email provider và observability provider?           | Chưa tích hợp external service                                                    | Ảnh hưởng env, Docker, CI/CD, monitoring      | OPEN                                      |
+| OQ-00-09 | Availability, traffic, p95 latency, backup/RTO/RPO mục tiêu?         | Dùng qualitative NFR cho đến khi có baseline                                      | Ảnh hưởng infra/caching/capacity              | OPEN                                      |
+| OQ-00-10 | Có yêu cầu multi-tenant, audit log, retention hoặc compliance không? | Không implement ở MVP                                                             | Có thể làm thay đổi data model/security       | OPEN                                      |
 
 ## 13. Definition of ready cho các phase kế tiếp
 
-Trước P03/P05 và trước khi khóa public product scope, tối thiểu phải có:
+Trước P05/P06 và trước khi khóa public product scope, tối thiểu phải có:
 
 - [ ] Product name hoặc quyết định rõ placeholder được dùng đến khi nào.
 - [ ] Product proposition và MVP audience được product owner xác nhận hoặc ghi accepted provisional.
 - [x] Product field/status/visibility provisional baseline đã được encode cho schema đầu tiên.
 - [x] Role/permission baseline đủ để seed và test authorization.
 - [ ] Product field/status/visibility baseline được product owner sign-off.
-- [ ] Session strategy được chọn hoặc có task decision rõ trong P03.
+- [x] Session strategy web-only được chọn và ghi rõ trong P03; refresh-token strategy được đánh dấu skip có điều kiện.
+- [x] Authorization baseline `requireAuth`/`requirePermission`, 401/403 contract và deny-by-default đã được triển khai ở P04.
 - [ ] Open question nào chưa chốt phải có owner, impact và phase xử lý.
 - [ ] `docs/01_PRODUCT_REQUIREMENTS.md`, `docs/PROGRESS.md` và Phase 00 task file nhất quán.

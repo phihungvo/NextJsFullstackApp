@@ -42,7 +42,17 @@ const authenticatedUser = {
   name: "Admin",
   status: "ACTIVE",
   passwordHash: "argon2-hash-is-not-returned",
-  roles: [{ role: { code: "ADMIN" } }],
+  roles: [
+    {
+      role: {
+        code: "ADMIN",
+        permissions: [
+          { permission: { code: "PRODUCT_VIEW" } },
+          { permission: { code: "USER_VIEW" } },
+        ],
+      },
+    },
+  ],
 };
 
 function jsonRequest(body: unknown): Request {
@@ -93,6 +103,7 @@ describe("authentication routes", () => {
           name: "Admin",
           status: "ACTIVE",
           roles: ["ADMIN"],
+          permissions: ["PRODUCT_VIEW", "USER_VIEW"],
         },
         expiresAt: "2030-01-01T00:00:00.000Z",
       },
@@ -162,6 +173,7 @@ describe("authentication routes", () => {
       name: "Admin",
       status: "ACTIVE",
       roles: ["ADMIN"],
+      permissions: ["PRODUCT_VIEW", "USER_VIEW"],
     });
 
     const authenticatedResponse = await me();
@@ -180,6 +192,7 @@ describe("authentication routes", () => {
           name: "Admin",
           status: "ACTIVE",
           roles: ["ADMIN"],
+          permissions: ["PRODUCT_VIEW", "USER_VIEW"],
         },
       },
     });

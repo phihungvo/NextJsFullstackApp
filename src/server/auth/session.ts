@@ -55,7 +55,16 @@ export async function getCurrentUser(): Promise<PublicUser | null> {
           roles: {
             select: {
               role: {
-                select: { code: true },
+                select: {
+                  code: true,
+                  permissions: {
+                    select: {
+                      permission: {
+                        select: { code: true },
+                      },
+                    },
+                  },
+                },
               },
             },
           },

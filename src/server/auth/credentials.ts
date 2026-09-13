@@ -11,7 +11,12 @@ export type AuthenticatedCredentialUser = {
   readonly name: string;
   readonly status: string;
   readonly passwordHash: string;
-  readonly roles: ReadonlyArray<{ readonly role: { readonly code: string } }>;
+  readonly roles: ReadonlyArray<{
+    readonly role: {
+      readonly code: string;
+      readonly permissions: ReadonlyArray<{ readonly permission: { readonly code: string } }>;
+    };
+  }>;
 };
 
 export async function authenticateCredentials(
@@ -33,7 +38,16 @@ export async function authenticateCredentials(
       roles: {
         select: {
           role: {
-            select: { code: true },
+            select: {
+              code: true,
+              permissions: {
+                select: {
+                  permission: {
+                    select: { code: true },
+                  },
+                },
+              },
+            },
           },
         },
       },

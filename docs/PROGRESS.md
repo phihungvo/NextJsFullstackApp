@@ -3,10 +3,10 @@
 ## Tổng quan
 
 - **Project:** Chưa chốt tên; master prompt đang dùng `[PROJECT_NAME]`.
-- **Ngày cập nhật:** 2026-09-13.
-- **Phase hiện tại:** P03 — Authentication (**TODO**, task kế tiếp).
-- **Task hiện tại:** P03-T01 — Authentication architecture (**TODO**, chờ session decision).
-- **Phase vừa hoàn tất:** P02 — Database.
+- **Ngày cập nhật:** 2026-09-14.
+- **Phase hiện tại:** P05 — Backend API (**TODO**, task kế tiếp).
+- **Task hiện tại:** P05-T01 — API response standard (**TODO**, phụ thuộc authorization đã hoàn tất).
+- **Phase vừa hoàn tất:** P04 — Authorization.
 - **Tổng task Phase 00:** 10.
 - **P00 hoàn thành:** 10.
 - **P00 đang làm:** 0.
@@ -20,24 +20,33 @@
 - **P02 đang làm:** 0.
 - **P02 blocked:** 0.
 - **P02 TODO:** 0.
+- **P03 hoàn thành:** 8.
+- **P03 đang làm:** 0.
+- **P03 blocked:** 0.
+- **P03 skipped có chủ đích:** 1 (`P03-T06`, refresh token).
+- **P03 TODO:** 0.
+- **P04 hoàn thành:** 8.
+- **P04 đang làm:** 0.
+- **P04 blocked:** 0.
+- **P04 TODO:** 0.
 
 ## Phase
 
-| Phase | Tên                            | Trạng thái | Ghi chú                                                  |
-| ----- | ------------------------------ | ---------- | -------------------------------------------------------- |
-| P00   | Discovery & Project Definition | DONE       | Docs-only; không có application code để test             |
-| P01   | Foundation                     | DONE       | P01-T01..P01-T10 đã xong; foundation gates đã pass       |
-| P02   | Database                       | DONE       | P02-T01..P02-T10 đã xong; provisional schema đã verify   |
-| P03   | Authentication                 | TODO       | Phụ thuộc P02 hoặc session decision phù hợp              |
-| P04   | Authorization                  | TODO       | Phụ thuộc P03 và role matrix                             |
-| P05   | Backend API                    | TODO       | Phụ thuộc P04                                            |
-| P06   | Frontend                       | TODO       | Phụ thuộc P05                                            |
-| P07   | SEO                            | TODO       | Có thể song song một phần với P06 sau public IA decision |
-| P08   | Testing                        | TODO       | Theo scope implementation                                |
-| P09   | Security                       | TODO       | Review xuyên suốt, formal audit ở phase này              |
-| P10   | Docker                         | TODO       | Phụ thuộc application foundation                         |
-| P11   | CI/CD                          | TODO       | Phụ thuộc scripts/build và deployment decision           |
-| P12   | Final Review                   | TODO       | Chỉ DONE khi toàn bộ acceptance đạt                      |
+| Phase | Tên                            | Trạng thái | Ghi chú                                                    |
+| ----- | ------------------------------ | ---------- | ---------------------------------------------------------- |
+| P00   | Discovery & Project Definition | DONE       | Docs-only; không có application code để test               |
+| P01   | Foundation                     | DONE       | P01-T01..P01-T10 đã xong; foundation gates đã pass         |
+| P02   | Database                       | DONE       | P02-T01..P02-T10 đã xong; provisional schema đã verify     |
+| P03   | Authentication                 | DONE       | P03-T01..P03-T09 đã xong; P03-T06 skipped có chủ đích      |
+| P04   | Authorization                  | DONE       | P04-T01..P04-T08 đã xong; baseline role matrix provisional |
+| P05   | Backend API                    | TODO       | Phụ thuộc P04                                              |
+| P06   | Frontend                       | TODO       | Phụ thuộc P05                                              |
+| P07   | SEO                            | TODO       | Có thể song song một phần với P06 sau public IA decision   |
+| P08   | Testing                        | TODO       | Theo scope implementation                                  |
+| P09   | Security                       | TODO       | Review xuyên suốt, formal audit ở phase này                |
+| P10   | Docker                         | TODO       | Phụ thuộc application foundation                           |
+| P11   | CI/CD                          | TODO       | Phụ thuộc scripts/build và deployment decision             |
+| P12   | Final Review                   | TODO       | Chỉ DONE khi toàn bộ acceptance đạt                        |
 
 ## Task đang thực hiện
 
@@ -54,8 +63,12 @@
 - P01-T10 — Health check đã hoàn thành.
 - P02-T01 — Thiết lập Prisma đã hoàn thành.
 - P02-T01..P02-T10 — Database đã hoàn thành theo provisional schema baseline.
-- Task tiếp theo: **P03-T01 — Authentication architecture**, chờ session strategy decision.
-- Các open questions về product vẫn được giữ nguyên; P02 chỉ encode provisional baseline, chưa được coi là business sign-off.
+- P03-T01..P03-T05 — Authentication architecture, password, login, logout, session đã hoàn thành.
+- P03-T06 — Refresh token đã **SKIPPED có chủ đích** cho web-only MVP; xem task register Phase 03.
+- P03-T07..P03-T09 — Me endpoint, rate limiting và authentication tests đã hoàn thành.
+- P04-T01..P04-T08 — RBAC, permission model, auth guards, frontend helper, 403 handling và tests đã hoàn thành.
+- Task tiếp theo: **P05-T01 — API response standard**.
+- Các open questions về product vẫn được giữ nguyên; P02/P03 chỉ encode provisional baseline, chưa được coi là business sign-off.
 
 ## Tasks đã hoàn thành
 
@@ -89,12 +102,34 @@
 - P02-T08 — Migration.
 - P02-T09 — Seed.
 - P02-T10 — Database verification.
+- P03-T01 — Authentication architecture.
+- P03-T02 — Password hashing.
+- P03-T03 — Login.
+- P03-T04 — Logout.
+- P03-T05 — Session.
+- P03-T07 — Me endpoint.
+- P03-T08 — Rate limiting.
+- P03-T09 — Authentication tests.
+- P04-T01 — RBAC.
+- P04-T02 — Permission model.
+- P04-T03 — requireAuth.
+- P04-T04 — requirePermission.
+- P04-T05 — Frontend permission helper.
+- P04-T06 — Permission middleware/service.
+- P04-T07 — 403 handling.
+- P04-T08 — Authorization tests.
 
-Chi tiết acceptance/verification: `docs/tasks/PHASE-01-FOUNDATION.md` và `docs/tasks/PHASE-02-DATABASE.md`.
+Task được đánh dấu skip có chủ đích:
+
+- P03-T06 — Refresh token nếu cần: chưa cần cho web-only MVP; phải tạo decision/migration/test mới nếu có external client.
+
+Chi tiết acceptance/verification: `docs/tasks/PHASE-01-FOUNDATION.md`, `docs/tasks/PHASE-02-DATABASE.md` và
+`docs/tasks/PHASE-03-AUTHENTICATION.md`.
 
 ## Tasks đang thực hiện
 
-- Không có task đang chạy tại thời điểm cập nhật; P03-T01 là task kế tiếp ở trạng thái TODO.
+- Không có task đang chạy tại thời điểm cập nhật.
+- Task kế tiếp: **P05-T01 — API response standard**.
 
 ## Tasks bị Blocked
 
@@ -108,29 +143,31 @@ Chi tiết acceptance/verification: `docs/tasks/PHASE-01-FOUNDATION.md` và `doc
 - MySQL 8 + Prisma; Redis cho cache/rate limiting/session-related data phù hợp.
 - Ant Design, TanStack Query, React Hook Form, Zod, Vitest, Testing Library, Playwright.
 - pnpm là package manager target.
-- Authentication cookie-first; session model cụ thể cần quyết định ở P03.
-- Product catalog + User/Role/Permission là MVP foundation, nhưng business meaning/product proposition còn provisional.
+- Authentication cookie-first; P03 dùng opaque DB-backed session 8 giờ, HMAC token hash, không refresh pair trong web-only MVP.
+- Login dùng Argon2id và Redis rate limit 5 attempts/60 giây; Redis failure fail-closed, không fallback in-memory production.
+- Product catalog + User/Role/Permission là MVP foundation; P04 dùng Admin full baseline và User `PRODUCT_VIEW`, nhưng business meaning/role matrix còn provisional.
 
 ## Vấn đề đang tồn tại
 
 1. Chưa có business brief, product name, audience sign-off hoặc public information architecture.
-2. Chưa có tests, Docker hoặc CI; database schema/migration/seed đã được triển khai theo provisional baseline và verify trên MySQL local.
-3. Chưa có role matrix mở rộng, Product business sign-off hoặc session strategy.
-4. Workspace chưa phải Git repository hợp lệ.
+2. Chưa có product/user/role/permission API hoặc feature UI; Docker và CI cũng chưa có.
+3. Role matrix chi tiết, Product business sign-off, session cleanup/retention policy và authorization audit log còn mở.
+4. Git remote/commit workflow của repository chưa được xác nhận.
 5. `docs/AI_MASTER_PROMPT.md` kết thúc bằng câu chưa hoàn chỉnh; cần maintenance task riêng, không tự sửa trong Phase 00.
 6. Master prompt có discrepancy giữa `docs/15_PROGRESS.md` và `docs/PROGRESS.md`; hiện dùng `docs/PROGRESS.md` theo workflow chi tiết và `AI_START_PROMPT.md`.
 
 ## Việc tiếp theo
 
-**P03-T01 — Authentication architecture**
+**P05-T01 — API response standard**
 
-Phạm vi dự kiến: chốt session strategy, cookie policy, password hashing integration, logout/revoke
-và rate limiting trước khi triển khai authentication flow. Product/schema thay đổi sau sign-off phải
-dùng migration mới.
+Phạm vi dự kiến: chuẩn hóa success/list/error response cho Product/User/Role/Permission API, tái sử dụng
+centralized error/trace contract và giữ flow route → validation → auth → authorization → service →
+repository. Role matrix chi tiết còn provisional; thay đổi schema sau sign-off phải dùng migration mới.
 
 ## Phase 00 completion note
 
-P00 đã hoàn tất discovery/documentation, P01 đã hoàn tất foundation và P02 đã hoàn tất database theo
-provisional baseline. Runtime đã verify trên MySQL 9.3 local; target production vẫn là MySQL 8. Test
-runner chưa được cài vì thuộc P08. Project vẫn chưa production-ready và P03 còn phụ thuộc session
-strategy decision.
+P00 đã hoàn tất discovery/documentation, P01 foundation, P02 database, P03 authentication và P04
+authorization theo provisional baseline. P04 đã verify backend authorization tests, frontend helper,
+403 mapping và role/permission runtime probe với temporary MySQL; các quality gates vẫn pass. Target
+production vẫn là MySQL 8. Project chưa production-ready vì product API/UI, Docker, CI/CD và formal
+security review còn ở các phase sau.

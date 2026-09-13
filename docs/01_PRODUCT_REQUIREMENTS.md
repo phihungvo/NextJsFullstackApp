@@ -3,11 +3,12 @@
 ## 1. Trạng thái và phạm vi của tài liệu
 
 - **Trạng thái:** Product baseline/provisional sau Phase 00; chưa phải business sign-off cuối cùng.
-- **Ngày:** 2026-09-13.
+- **Ngày:** 2026-09-14.
 - **Mục đích:** làm source of truth cho product scope, functional requirements và acceptance baseline của các phase sau.
 - **Implementation note:** P01 đã tạo foundation scaffold, error/logging contract và liveness endpoint;
-  P02 đã tạo provisional Prisma/MySQL domain schema, migration và development seed; authentication,
-  authorization và feature UI chưa được implement.
+  P02 đã tạo provisional Prisma/MySQL domain schema, migration và development seed; P03 đã implement
+  web authentication (login/logout/me, opaque session, Argon2id và Redis rate limiting); P04 đã implement
+  server RBAC/permission guards và frontend capability helper; feature API/UI chưa được implement.
 - **Cách đọc:** `MUST` là baseline bắt buộc theo requirement/master prompt; `SHOULD` là ưu tiên nên có; `TBD` là vấn đề chưa đủ thông tin, không được tự chốt ngầm.
 - **Product proposition chưa được cung cấp:** các phần được đánh dấu **[PROVISIONAL]** phải được xác nhận trước khi public launch và trước khi khóa schema/domain chi tiết.
 
@@ -97,26 +98,31 @@ Subscription, payment, email/notification, upload, blog CMS, docs CMS, advanced 
 
 ### 5.1 Authentication
 
-| ID         | Requirement                               | Acceptance baseline                                                                           |
-| ---------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
-| FR-AUTH-01 | User có thể login bằng credential hợp lệ  | Tạo authenticated session; không trả password/token nhạy cảm trong body/log                   |
-| FR-AUTH-02 | Credential sai hoặc account không tồn tại | Trả lỗi generic phù hợp; không leak user existence; áp dụng rate limiting                     |
-| FR-AUTH-03 | User có thể logout                        | Session/token hợp lệ bị invalidated/revoked theo session strategy                             |
-| FR-AUTH-04 | User có thể lấy current user              | Chỉ authenticated request thành công; response không chứa secret fields                       |
-| FR-AUTH-05 | Session được bảo vệ                       | Cookie-first, HttpOnly, Secure production, SameSite phù hợp, expiry; chi tiết model TBD ở P03 |
-| FR-AUTH-06 | Password được lưu an toàn                 | Hash Argon2id ưu tiên; secret/config chỉ từ environment                                       |
+| ID         | Requirement                               | Acceptance baseline                                                                                                       |
+| ---------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| FR-AUTH-01 | User có thể login bằng credential hợp lệ  | Tạo authenticated session; không trả password/token nhạy cảm trong body/log                                               |
+| FR-AUTH-02 | Credential sai hoặc account không tồn tại | Trả lỗi generic phù hợp; không leak user existence; áp dụng rate limiting                                                 |
+| FR-AUTH-03 | User có thể logout                        | Session/token hợp lệ bị invalidated/revoked theo session strategy                                                         |
+| FR-AUTH-04 | User có thể lấy current user              | Chỉ authenticated request thành công; response không chứa secret fields                                                   |
+| FR-AUTH-05 | Session được bảo vệ                       | P03: opaque DB-backed session 8 giờ; cookie HttpOnly, Secure production, SameSite=Lax, Path=/; DB chỉ lưu HMAC token hash |
+| FR-AUTH-06 | Password được lưu an toàn                 | Hash Argon2id ưu tiên; secret/config chỉ từ environment                                                                   |
 
-Target endpoints: `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`; refresh endpoint chỉ bắt buộc nếu session strategy dùng refresh token, và phải document rotation/revoke.
+Implemented P03 endpoints: `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`.
+Refresh endpoint được **SKIPPED có chủ đích** cho web-only MVP; nếu có external client hoặc yêu cầu
+long-lived session, phải có decision về rotation/revoke trước khi thêm route.
 
 ### 5.2 Authorization
 
-| ID       | Requirement                                          | Acceptance baseline                                               |
-| -------- | ---------------------------------------------------- | ----------------------------------------------------------------- |
-| FR-AZ-01 | Mọi private operation yêu cầu authentication         | Anonymous request nhận `401`                                      |
-| FR-AZ-02 | Permission được kiểm tra ở backend                   | Thiếu quyền nhận `403`, không thể bypass bằng cách sửa UI/request |
-| FR-AZ-03 | User/Role/Permission relationships được lưu bền vững | Có FK/unique/index và transaction phù hợp                         |
-| FR-AZ-04 | Frontend phản ánh capability                         | Ẩn/disable UX khi cần nhưng không được là security boundary       |
-| FR-AZ-05 | Authorization deny by default                        | Permission mới không tự động mở quyền ngoài policy                |
+| ID       | Requirement                                          | Acceptance baseline                                             |
+| -------- | ---------------------------------------------------- | --------------------------------------------------------------- |
+| FR-AZ-01 | Mọi private operation yêu cầu authentication         | Server guard `requireAuth()`; anonymous request nhận `401`      |
+| FR-AZ-02 | Permission được kiểm tra ở backend                   | `requirePermission()` kiểm tra database; thiếu quyền nhận `403` |
+| FR-AZ-03 | User/Role/Permission relationships được lưu bền vững | Có FK/unique/index và transaction phù hợp                       |
+| FR-AZ-04 | Frontend phản ánh capability                         | Ẩn/disable UX khi cần nhưng không được là security boundary     |
+| FR-AZ-05 | Authorization deny by default                        | Unknown/unassigned permission bị deny; không wildcard implicit  |
+
+P04 baseline: `ADMIN` seed có toàn bộ 16 permission codes; `USER` seed chỉ có `PRODUCT_VIEW`. Đây là
+baseline kỹ thuật để unblock API, chưa phải role matrix business sign-off cuối cùng.
 
 ### 5.3 Product management
 
@@ -210,7 +216,8 @@ Mọi data screen phải có success, loading, empty và error. Private screen p
 - Không lưu token nhạy cảm trong `localStorage`/`sessionStorage`.
 - Không log password, token, cookie, secret hoặc API key.
 - Security headers gồm CSP cân nhắc an toàn, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS khi HTTPS production sẵn sàng.
-- Rate limiting cho login, refresh/forgot-password nếu có và public API; Redis là lựa chọn distributed ưu tiên.
+- Rate limiting cho login, refresh/forgot-password nếu có và public API; P03 dùng Redis distributed,
+  fail-closed khi Redis không khả dụng, với login limit 5 attempts/60 giây.
 - Generic auth error, centralized error mapping và no internal stack trace exposure.
 
 ### 7.2 SEO và performance
@@ -254,15 +261,15 @@ Trước khi một phase implementation được đánh dấu DONE: lint, typech
 
 ## 9. Assumptions, unresolved requirements và impact
 
-| ID       | Unresolved item                     | Assumption hiện tại                                          | Phase cần xử lý | Impact                               |
-| -------- | ----------------------------------- | ------------------------------------------------------------ | --------------- | ------------------------------------ |
-| PR-OQ-01 | Tên/brand/domain                    | Giữ `[PROJECT_NAME]`                                         | P00/P01         | Package, metadata, canonical, deploy |
-| PR-OQ-02 | Business/product proposition        | Catalog management foundation                                | P00 trước P01   | Có thể đổi entity, audience, IA      |
-| PR-OQ-03 | Product schema/status/visibility    | P02 provisional baseline đã encode; sign-off business còn mở | P05/P07         | DB, API, form, SEO                   |
-| PR-OQ-04 | Role matrix và system-role policy   | Admin/User seed; matrix tối thiểu ở mục 3.1                  | P03/P04         | Authz, seed, E2E                     |
-| PR-OQ-05 | Session strategy                    | Cookie-first; model cụ thể TBD                               | P03             | DB, Redis, API rotation              |
-| PR-OQ-06 | Public route/taxonomy               | Dùng candidate routes làm placeholder                        | P06/P07         | Sitemap, metadata, content model     |
-| PR-OQ-07 | SLO, traffic, compliance, retention | Chưa có quantitative target                                  | P09/P10/P12     | Security/performance/ops             |
+| ID       | Unresolved item                     | Assumption hiện tại                                                              | Phase cần xử lý | Impact                                  |
+| -------- | ----------------------------------- | -------------------------------------------------------------------------------- | --------------- | --------------------------------------- |
+| PR-OQ-01 | Tên/brand/domain                    | Giữ `[PROJECT_NAME]`                                                             | P00/P01         | Package, metadata, canonical, deploy    |
+| PR-OQ-02 | Business/product proposition        | Catalog management foundation                                                    | P00 trước P01   | Có thể đổi entity, audience, IA         |
+| PR-OQ-03 | Product schema/status/visibility    | P02 provisional baseline đã encode; sign-off business còn mở                     | P05/P07         | DB, API, form, SEO                      |
+| PR-OQ-04 | Role matrix và system-role policy   | Admin/User seed; matrix tối thiểu ở mục 3.1                                      | P03/P04         | Authz, seed, E2E                        |
+| PR-OQ-05 | Session strategy                    | P03: opaque DB session 8 giờ; cookie-only; không refresh pair trong web-only MVP | P03/P09         | DB, Redis, rotation nếu external client |
+| PR-OQ-06 | Public route/taxonomy               | Dùng candidate routes làm placeholder                                            | P06/P07         | Sitemap, metadata, content model        |
+| PR-OQ-07 | SLO, traffic, compliance, retention | Chưa có quantitative target                                                      | P09/P10/P12     | Security/performance/ops                |
 
 Requirement nào thay đổi các mục trên phải cập nhật tài liệu này, overview, task và `PROGRESS.md` trước khi implementation phụ thuộc vào nó tiếp tục.
 
@@ -272,8 +279,9 @@ MVP chỉ được xem là product-ready khi tất cả mục sau được xác 
 
 - [ ] Product name, audience, proposition và public/private boundary đã được product owner sign-off.
 - [ ] Product schema, status, visibility, slug/identifier và lifecycle đã được product owner sign-off (P02 provisional baseline đã encode).
-- [ ] Login/logout/me và session security đã test.
-- [ ] RBAC matrix và 401/403 behavior đã test ở backend và E2E.
+- [x] Login/logout/me và session security đã test trong P03 unit/route/runtime smoke scope.
+- [ ] RBAC matrix và 401/403 behavior đã test đầy đủ ở backend và E2E (P04 đã có backend/unit/runtime,
+      E2E chờ dashboard/API mutation ở P08).
 - [ ] Product CRUD, validation, duplicate/not-found, pagination, sorting và filtering đã test.
 - [ ] User/role/permission management enforce quyền và không expose secret fields.
 - [ ] API response/error contract và traceability nhất quán.

@@ -4,5 +4,6 @@ Server-only database client/configuration boundary. Prisma 7 dùng `prisma.confi
 `prisma/schema.prisma` và generated client ở `src/generated/prisma`.
 
 `prisma.ts` là singleton boundary cho server code; không import database client vào Client Component.
-Chưa có model, migration hoặc seed vì Product/User/Role/Permission schema còn phụ thuộc product
-decision. Không gọi Prisma trực tiếp từ UI; flow bắt buộc là route/service → repository → Prisma.
+Schema/migration/seed hiện có `User`, `Role`, `Permission`, `Product` và infrastructure `Session` theo
+provisional baseline của P02/P03. Không gọi Prisma trực tiếp từ UI; flow bắt buộc là route/service →
+repository → Prisma. Authorization queries phải đi qua server authorization service.
