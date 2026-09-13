@@ -75,10 +75,12 @@ describe("authentication routes", () => {
   it("logs in successfully without returning password or raw session token", async () => {
     mocks.authenticateCredentials.mockResolvedValue(authenticatedUser);
 
-    const response = await login(jsonRequest({
-      email: "ADMIN@EXAMPLE.COM",
-      password: "correct-password",
-    }));
+    const response = await login(
+      jsonRequest({
+        email: "ADMIN@EXAMPLE.COM",
+        password: "correct-password",
+      }),
+    );
     const body = await readJson(response);
     const serialized = JSON.stringify(body);
 
@@ -118,7 +120,10 @@ describe("authentication routes", () => {
       code: "UNAUTHORIZED",
       message: "Email hoặc mật khẩu không đúng.",
     });
-    expect(unknownUserBody.error).toMatchObject(wrongPasswordBody.error as object);
+    expect(unknownUserBody.error).toMatchObject({
+      code: "UNAUTHORIZED",
+      message: "Email hoặc mật khẩu không đúng.",
+    });
   });
 
   it("returns 429 when the login rate limit is exceeded", async () => {
