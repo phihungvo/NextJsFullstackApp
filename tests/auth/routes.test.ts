@@ -96,6 +96,7 @@ describe("authentication routes", () => {
 
     expect(response.status).toBe(200);
     expect(body).toEqual({
+      success: true,
       data: {
         user: {
           id: "user_1",
@@ -127,11 +128,11 @@ describe("authentication routes", () => {
 
     expect(wrongPasswordResponse.status).toBe(401);
     expect(unknownUserResponse.status).toBe(401);
-    expect(wrongPasswordBody.error).toMatchObject({
+    expect(wrongPasswordBody).toMatchObject({
       code: "UNAUTHORIZED",
       message: "Email hoặc mật khẩu không đúng.",
     });
-    expect(unknownUserBody.error).toMatchObject({
+    expect(unknownUserBody).toMatchObject({
       code: "UNAUTHORIZED",
       message: "Email hoặc mật khẩu không đúng.",
     });
@@ -150,7 +151,7 @@ describe("authentication routes", () => {
     const body = await readJson(response);
 
     expect(response.status).toBe(429);
-    expect(body.error).toMatchObject({ code: "RATE_LIMITED" });
+    expect(body).toMatchObject({ code: "RATE_LIMITED" });
     expect(mocks.authenticateCredentials).not.toHaveBeenCalled();
   });
 
@@ -161,7 +162,7 @@ describe("authentication routes", () => {
     const body = await readJson(response);
 
     expect(response.status).toBe(200);
-    expect(body).toEqual({ data: { success: true } });
+    expect(body).toEqual({ success: true, data: { success: true } });
     expect(mocks.revokeSession).toHaveBeenCalledWith("opaque-session-token");
     expect(mocks.clearSessionCookie).toHaveBeenCalledOnce();
   });
@@ -185,6 +186,7 @@ describe("authentication routes", () => {
 
     expect(authenticatedResponse.status).toBe(200);
     expect(authenticatedBody).toEqual({
+      success: true,
       data: {
         user: {
           id: "user_1",
@@ -197,6 +199,6 @@ describe("authentication routes", () => {
       },
     });
     expect(anonymousResponse.status).toBe(401);
-    expect(anonymousBody.error).toMatchObject({ code: "UNAUTHORIZED" });
+    expect(anonymousBody).toMatchObject({ code: "UNAUTHORIZED" });
   });
 });

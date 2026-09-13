@@ -1,5 +1,6 @@
 export const ERROR_CODES = {
   BAD_REQUEST: "BAD_REQUEST",
+  VALIDATION_ERROR: "VALIDATION_ERROR",
   UNAUTHORIZED: "UNAUTHORIZED",
   FORBIDDEN: "FORBIDDEN",
   NOT_FOUND: "NOT_FOUND",
@@ -18,6 +19,7 @@ type ErrorDefinition = {
 
 const ERROR_DEFINITIONS: Record<ErrorCode, ErrorDefinition> = {
   BAD_REQUEST: { status: 400, fallbackMessage: "Yêu cầu không hợp lệ." },
+  VALIDATION_ERROR: { status: 422, fallbackMessage: "Dữ liệu không hợp lệ." },
   UNAUTHORIZED: { status: 401, fallbackMessage: "Bạn cần đăng nhập để tiếp tục." },
   FORBIDDEN: { status: 403, fallbackMessage: "Bạn không có quyền thực hiện thao tác này." },
   NOT_FOUND: { status: 404, fallbackMessage: "Không tìm thấy tài nguyên." },
@@ -28,11 +30,13 @@ const ERROR_DEFINITIONS: Record<ErrorCode, ErrorDefinition> = {
 };
 
 export type ApiErrorBody = {
-  readonly error: {
-    readonly code: ErrorCode;
-    readonly message: string;
-    readonly traceId: string;
-  };
+  readonly success: false;
+  readonly code: ErrorCode;
+  readonly message: string;
+  readonly errors?: Readonly<Record<string, readonly string[]>>;
+  readonly traceId: string;
+  readonly timestamp: string;
+  readonly path: string;
 };
 
 export class ApplicationError extends Error {
@@ -54,15 +58,24 @@ export function createTraceId(): string {
 export function toApiErrorResponse(
   error: unknown,
   traceId: string = createTraceId(),
+  context: {
+    readonly errors?: Readonly<Record<string, readonly string[]>>;
+    readonly path?: string;
+  } = {},
 ): { body: ApiErrorBody; status: number } {
+  const timestamp = new Date().toISOString();
+  const path = context.path ?? "/api/unknown";
+
   if (error instanceof ApplicationError) {
     return {
       body: {
-        error: {
-          code: error.code,
-          message: error.message,
-          traceId,
-        },
+        success: false,
+        code: error.code,
+        message: error.message,
+        ...(context.errors ? { errors: context.errors } : {}),
+        traceId,
+        timestamp,
+        path,
       },
       status: error.status,
     };
@@ -70,11 +83,12 @@ export function toApiErrorResponse(
 
   return {
     body: {
-      error: {
-        code: ERROR_CODES.INTERNAL_ERROR,
-        message: ERROR_DEFINITIONS.INTERNAL_ERROR.fallbackMessage,
-        traceId,
-      },
+      success: false,
+      code: ERROR_CODES.INTERNAL_ERROR,
+      message: ERROR_DEFINITIONS.INTERNAL_ERROR.fallbackMessage,
+      traceId,
+      timestamp,
+      path,
     },
     status: ERROR_DEFINITIONS.INTERNAL_ERROR.status,
   };

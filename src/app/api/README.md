@@ -1,7 +1,8 @@
 # API routes
 
-Route Handlers phải đi qua validation, authentication, authorization, service và repository khi
-domain behavior được thêm.
+Route Handlers phải đi qua parse/validation, authentication, authorization, service và repository khi
+domain behavior được thêm. P05 đã áp dụng boundary này cho các resource Product, User, Role và
+Permission dưới `/api/v1`.
 
 ## Health endpoint
 
@@ -19,5 +20,6 @@ hoặc infrastructure detail:
 }
 ```
 
-Database/Redis readiness checks chỉ được thêm sau khi client và dependency thực tế được triển khai;
-không tạo check giả hoặc coi placeholder environment là dependency đã sẵn sàng.
+Database/Redis readiness checks vẫn được tách khỏi liveness endpoint; health contract chưa được mở rộng
+để tránh coi placeholder environment là dependency đã sẵn sàng. P05 đã kiểm chứng các dependency thực tế
+qua runtime smoke test riêng.

@@ -2,13 +2,14 @@
 
 ## 1. Trạng thái và phạm vi của tài liệu
 
-- **Trạng thái:** Product baseline/provisional sau Phase 00; chưa phải business sign-off cuối cùng.
+- **Trạng thái:** Product baseline/provisional sau P05; chưa phải business sign-off cuối cùng.
 - **Ngày:** 2026-09-14.
 - **Mục đích:** làm source of truth cho product scope, functional requirements và acceptance baseline của các phase sau.
 - **Implementation note:** P01 đã tạo foundation scaffold, error/logging contract và liveness endpoint;
   P02 đã tạo provisional Prisma/MySQL domain schema, migration và development seed; P03 đã implement
   web authentication (login/logout/me, opaque session, Argon2id và Redis rate limiting); P04 đã implement
-  server RBAC/permission guards và frontend capability helper; feature API/UI chưa được implement.
+  server RBAC/permission guards và frontend capability helper; P05 đã implement versioned backend API,
+  còn feature UI chưa được implement.
 - **Cách đọc:** `MUST` là baseline bắt buộc theo requirement/master prompt; `SHOULD` là ưu tiên nên có; `TBD` là vấn đề chưa đủ thông tin, không được tự chốt ngầm.
 - **Product proposition chưa được cung cấp:** các phần được đánh dấu **[PROVISIONAL]** phải được xác nhận trước khi public launch và trước khi khóa schema/domain chi tiết.
 
@@ -142,6 +143,11 @@ baseline kỹ thuật để unblock API, chưa phải role matrix business sign-
 > và business meaning vẫn cần product-owner sign-off trước public launch. Thay đổi sau migration phải
 > tạo migration mới.
 
+P05 đã hiện thực hóa baseline này qua `/api/v1/products` và `/api/v1/products/[id]`: list/detail/create/
+update/archive, validation `price`/`slug`/status/visibility, duplicate slug conflict và query
+pagination/search/filter/sort whitelist. `DELETE` là archive/soft-delete; public product API chưa được
+expose cho đến khi public visibility policy được chốt.
+
 ### 5.4 User management
 
 | ID         | Requirement                                    | Acceptance baseline                                                                            |
@@ -173,6 +179,23 @@ baseline kỹ thuật để unblock API, chưa phải role matrix business sign-
 
 Public route candidates (`/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/docs`) là khả năng mở rộng từ master prompt, không phải toàn bộ route bắt buộc trước product sign-off.
 
+### 5.7 Backend API implementation baseline
+
+P05 đã triển khai các private, permission-gated Route Handler sau:
+
+| Resource   | Methods                                                               | Authorization baseline              |
+| ---------- | --------------------------------------------------------------------- | ----------------------------------- |
+| Product    | `GET/POST /api/v1/products`; `GET/PATCH/DELETE /api/v1/products/[id]` | `PRODUCT_VIEW/CREATE/UPDATE/DELETE` |
+| User       | `GET/POST /api/v1/users`; `GET/PATCH/DELETE /api/v1/users/[id]`       | `USER_VIEW/CREATE/UPDATE/DELETE`    |
+| Role       | `GET/POST /api/v1/roles`; `GET/PATCH/DELETE /api/v1/roles/[id]`       | `ROLE_VIEW/CREATE/UPDATE/DELETE`    |
+| Permission | `GET /api/v1/permissions`; `GET /api/v1/permissions/[id]`             | `PERMISSION_VIEW`                   |
+
+Mutation body được validate lại ở backend bằng Zod. List query có `page`/`pageSize` (mặc định `1/20`,
+tối đa `100`), `search`, resource filters và `sortBy`/`sortOrder` whitelist. Response thành công dùng
+`{ success: true, data, meta? }`; lỗi dùng flat contract với `code`, safe `message`, optional `errors`,
+`traceId`, `timestamp`, `path`. User/role response chỉ dùng public fields; `password`, `passwordHash`,
+token và secret không được serialize.
+
 ## 6. API và interaction requirements
 
 ### 6.1 Route baseline
@@ -201,7 +224,15 @@ List endpoint hỗ trợ contract chuẩn hóa:
 page, pageSize, sortBy, sortOrder, search, filter
 ```
 
-`sortBy`, `sortOrder` và filter fields phải whitelist. Success list gồm `data` và `meta` (`page`, `pageSize`, `total`, `totalPages`). Error gồm `success: false`, stable `code`, safe `message`, optional field `errors`, `traceId`, `timestamp`, `path`; không trả stack trace, SQL, internal path, secret hoặc credential.
+`sortBy`, `sortOrder` và filter fields phải whitelist. P05 dùng `page=1`, `pageSize=20` mặc định và giới
+hạn `pageSize` tối đa `100`; `sortOrder` chỉ nhận `asc|desc`. Success list gồm `data` và `meta`
+(`page`, `pageSize`, `total`, `totalPages`). Error gồm `success: false`, stable `code`, safe `message`,
+optional field `errors`, `traceId`, `timestamp`, `path`; không trả stack trace, SQL, internal path, secret
+hoặc credential.
+
+Master prompt liệt kê query key generic `filter` nhưng chưa quy định encoding hoặc grammar. P05 không
+nhận filter tự do; thay vào đó dùng các field filter typed và whitelist theo resource (`status`,
+`visibility`). Cần chốt format `filter` generic trước khi client cần filter đa trường hoặc filter động.
 
 ### 6.3 UX states
 
@@ -265,8 +296,8 @@ Trước khi một phase implementation được đánh dấu DONE: lint, typech
 | -------- | ----------------------------------- | -------------------------------------------------------------------------------- | --------------- | --------------------------------------- |
 | PR-OQ-01 | Tên/brand/domain                    | Giữ `[PROJECT_NAME]`                                                             | P00/P01         | Package, metadata, canonical, deploy    |
 | PR-OQ-02 | Business/product proposition        | Catalog management foundation                                                    | P00 trước P01   | Có thể đổi entity, audience, IA         |
-| PR-OQ-03 | Product schema/status/visibility    | P02 provisional baseline đã encode; sign-off business còn mở                     | P05/P07         | DB, API, form, SEO                      |
-| PR-OQ-04 | Role matrix và system-role policy   | Admin/User seed; matrix tối thiểu ở mục 3.1                                      | P03/P04         | Authz, seed, E2E                        |
+| PR-OQ-03 | Product schema/status/visibility    | P02/P05 provisional baseline đã encode; sign-off business còn mở                 | P07/P12         | DB, API, form, SEO                      |
+| PR-OQ-04 | Role matrix và system-role policy   | Admin/User seed; matrix tối thiểu ở mục 3.1                                      | P06/P08         | Authz, UI, E2E                          |
 | PR-OQ-05 | Session strategy                    | P03: opaque DB session 8 giờ; cookie-only; không refresh pair trong web-only MVP | P03/P09         | DB, Redis, rotation nếu external client |
 | PR-OQ-06 | Public route/taxonomy               | Dùng candidate routes làm placeholder                                            | P06/P07         | Sitemap, metadata, content model        |
 | PR-OQ-07 | SLO, traffic, compliance, retention | Chưa có quantitative target                                                      | P09/P10/P12     | Security/performance/ops                |
@@ -282,9 +313,9 @@ MVP chỉ được xem là product-ready khi tất cả mục sau được xác 
 - [x] Login/logout/me và session security đã test trong P03 unit/route/runtime smoke scope.
 - [ ] RBAC matrix và 401/403 behavior đã test đầy đủ ở backend và E2E (P04 đã có backend/unit/runtime,
       E2E chờ dashboard/API mutation ở P08).
-- [ ] Product CRUD, validation, duplicate/not-found, pagination, sorting và filtering đã test.
-- [ ] User/role/permission management enforce quyền và không expose secret fields.
-- [ ] API response/error contract và traceability nhất quán.
+- [x] Product CRUD, validation, duplicate/not-found, pagination, sorting và filtering đã test ở route/runtime scope; E2E còn chờ P08.
+- [x] User/role/permission management enforce quyền và không expose secret fields ở API/runtime scope.
+- [x] API response/error contract và traceability nhất quán ở API runtime scope.
 - [ ] Public pages có metadata/canonical/social cards/sitemap/robots/structured data phù hợp; dashboard noindex.
 - [ ] Loading/empty/error/unauthorized/forbidden/not-found và responsive/accessibility baseline đã review.
 - [ ] Lint, typecheck, tests, build, Docker/CI verification pass theo scope.
@@ -293,5 +324,5 @@ MVP chỉ được xem là product-ready khi tất cả mục sau được xác 
 ## 11. Traceability với Project Overview
 
 - Product definition, scope và open questions ở đây phải khớp mục 2, 4 và 12 của `docs/00_PROJECT_OVERVIEW.md`.
-- Kiến trúc, stack, NFR và phase dependency chi tiết được định nghĩa ở `docs/00_PROJECT_OVERVIEW.md`; technical implementation sẽ được bổ sung ở các tài liệu architecture tương ứng.
+- Kiến trúc, stack, NFR và phase dependency chi tiết được định nghĩa ở `docs/00_PROJECT_OVERVIEW.md`; P05 implementation details nằm ở `docs/tasks/PHASE-05-BACKEND-API.md`.
 - Không có requirement nào trong tài liệu này được hiểu là đã implemented khi repository chưa có code; trạng thái implementation theo dõi ở `docs/PROGRESS.md`.

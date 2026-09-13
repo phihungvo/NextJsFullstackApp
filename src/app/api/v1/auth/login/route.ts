@@ -14,6 +14,7 @@ const loginSchema = z.object({
 });
 
 const GENERIC_AUTH_ERROR = "Email hoặc mật khẩu không đúng.";
+const PATH = "/api/v1/auth/login";
 
 function createLoginIdentifier(request: Request, email: string): string {
   return `${getClientAddress(request)}:${email}`;
@@ -24,12 +25,17 @@ export async function POST(request: Request): Promise<Response> {
   try {
     body = await request.json();
   } catch {
-    return apiError(new ApplicationError(ERROR_CODES.BAD_REQUEST));
+    return apiError(new ApplicationError(ERROR_CODES.VALIDATION_ERROR), { path: PATH });
   }
 
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
-    return apiError(new ApplicationError(ERROR_CODES.BAD_REQUEST));
+    return apiError(new ApplicationError(ERROR_CODES.VALIDATION_ERROR), {
+      errors: {
+        body: ["Email và password không hợp lệ."],
+      },
+      path: PATH,
+    });
   }
 
   try {
@@ -37,12 +43,14 @@ export async function POST(request: Request): Promise<Response> {
       createLoginIdentifier(request, parsed.data.email),
     );
     if (!rateLimit.allowed) {
-      return apiError(new ApplicationError(ERROR_CODES.RATE_LIMITED));
+      return apiError(new ApplicationError(ERROR_CODES.RATE_LIMITED), { path: PATH });
     }
 
     const user = await authenticateCredentials(parsed.data.email, parsed.data.password);
     if (!user) {
-      return apiError(new ApplicationError(ERROR_CODES.UNAUTHORIZED, GENERIC_AUTH_ERROR));
+      return apiError(new ApplicationError(ERROR_CODES.UNAUTHORIZED, GENERIC_AUTH_ERROR), {
+        path: PATH,
+      });
     }
 
     const session = await createSession(user.id);
@@ -53,6 +61,6 @@ export async function POST(request: Request): Promise<Response> {
     setSessionCookie(response, session.token, session.expiresAt);
     return response;
   } catch {
-    return apiError(new ApplicationError(ERROR_CODES.SERVICE_UNAVAILABLE));
+    return apiError(new ApplicationError(ERROR_CODES.SERVICE_UNAVAILABLE), { path: PATH });
   }
 }

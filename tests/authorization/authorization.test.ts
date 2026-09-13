@@ -106,12 +106,12 @@ describe("authorization service", () => {
     );
 
     expect(response.status).toBe(403);
-    expect(response.body).toEqual({
-      error: {
-        code: "FORBIDDEN",
-        message: "Bạn không có quyền thực hiện thao tác này.",
-        traceId: "trace-forbidden",
-      },
+    expect(response.body).toMatchObject({
+      success: false,
+      code: "FORBIDDEN",
+      message: "Bạn không có quyền thực hiện thao tác này.",
+      traceId: "trace-forbidden",
+      path: "/api/unknown",
     });
   });
 });

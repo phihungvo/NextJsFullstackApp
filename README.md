@@ -7,9 +7,9 @@ proposition are still provisional; see the discovery documents before adding dom
 
 - Next.js App Router + React + TypeScript strict
 - pnpm
-- Ant Design, TanStack Query, React Hook Form and Zod (planned in later foundation tasks)
-- Prisma + MySQL 8 and Redis (planned in later phases)
-- Vitest, Testing Library and Playwright (planned in the testing phase)
+- Ant Design, TanStack Query, React Hook Form and Zod (UI integrations remain in P06)
+- Prisma + MySQL 8 and Redis
+- Vitest (auth/authz/API tests); Testing Library and Playwright remain for later phases
 
 ## Development
 
@@ -27,7 +27,9 @@ pnpm format:check
 pnpm build
 ```
 
-Tests will be added in the testing phase. Do not treat the current scaffold as production-ready.
+Current test scope covers auth, authorization, API response/error contract and API route behavior.
+Component/E2E coverage, Docker, CI/CD and formal security review remain in later phases. Do not treat
+the current baseline as production-ready.
 
 ## Documentation
 
@@ -35,3 +37,4 @@ Tests will be added in the testing phase. Do not treat the current scaffold as p
 - `docs/01_PRODUCT_REQUIREMENTS.md` — product scope and requirements
 - `docs/PROGRESS.md` — phase/task progress
 - `docs/tasks/PHASE-00-DISCOVERY.md` — completed discovery task register
+- `docs/tasks/PHASE-05-BACKEND-API.md` — completed backend API task register

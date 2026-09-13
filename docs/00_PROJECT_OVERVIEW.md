@@ -2,7 +2,7 @@
 
 ## 1. Trạng thái tài liệu
 
-- **Trạng thái:** Implementation baseline, cập nhật sau khi hoàn tất P04 — Authorization.
+- **Trạng thái:** Implementation baseline, cập nhật sau khi hoàn tất P05 — Backend API.
 - **Ngày rà soát:** 2026-09-14.
 - **Mức độ tin cậy:**
   - **Đã xác nhận:** hiện trạng repository và các quy tắc trong `docs/AI_MASTER_PROMPT.md`, `docs/AI_START_PROMPT.md`.
@@ -26,32 +26,32 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 ### 3.1 Project
 
 - Tên dự án: **chưa có trong repository**; master prompt vẫn dùng placeholder `[PROJECT_NAME]`.
-- Trạng thái hiện tại: đã có Next.js foundation, database baseline, authentication và authorization
-  baseline; product/user API và feature UI chưa được implement.
+- Trạng thái hiện tại: đã có Next.js foundation, database baseline, authentication, authorization và
+  versioned Product/User/Role/Permission API; feature UI chưa được implement.
 - Tên working không được tự động trở thành tên chính thức. Cần chốt ở P00-T10 hoặc trước khi khởi tạo foundation.
 
 ### 3.2 Current architecture
 
 - **Hiện trạng:** đã có Next.js App Router skeleton, error/logging foundation, liveness endpoint,
-  Prisma/MySQL domain baseline, server-only authentication boundary và authorization service/guards;
-  product/user API và feature UI chưa được implement.
+  Prisma/MySQL domain baseline, server-only authentication boundary, authorization service/guards và
+  versioned backend API cho Product/User/Role/Permission; feature UI chưa được implement.
 - **Target:** một Next.js Fullstack Application duy nhất, không tách frontend React hoặc backend Spring Boot riêng.
 - **Module boundary target:** public/auth/dashboard route groups; feature modules; server services/repositories; shared infrastructure (`db`, `redis`, validation, API, security).
 
 ### 3.3 Technology stack
 
-| Hạng mục        | Hiện trạng đã xác nhận          | Target theo master prompt           | Ghi chú                                                  |
-| --------------- | ------------------------------- | ----------------------------------- | -------------------------------------------------------- |
-| Framework       | Next.js 16.3.5                  | Next.js App Router                  | Đã scaffold và build pass                                |
-| Language        | TypeScript 5.9.3 strict         | TypeScript strict                   | `tsconfig.json` đã được Next.js hoàn thiện               |
-| UI              | NOT FOUND                       | Ant Design                          | Dùng cho dashboard/shared UI                             |
-| Server state    | NOT FOUND                       | TanStack Query                      | Chủ yếu cho client interactions                          |
-| Form/validation | NOT FOUND                       | React Hook Form + Zod               | Backend vẫn là nơi validate cuối                         |
-| ORM/database    | Prisma 7.10.0 + schema          | Prisma + MySQL 8                    | Migration/seed/session đã tạo; đã verify temporary MySQL |
-| Cache/infra     | Redis client + login rate limit | Redis                               | Không dùng thay cho nguồn dữ liệu chính                  |
-| Tests           | Vitest + auth unit/route tests  | Vitest, Testing Library, Playwright | Component/E2E chưa có                                    |
-| Package manager | pnpm 12.4.1                     | pnpm                                | `pnpm-lock.yaml` đã tạo                                  |
-| Delivery        | NOT FOUND                       | Docker + CI/CD                      | Chưa có Dockerfile, Compose hay workflow                 |
+| Hạng mục        | Hiện trạng đã xác nhận              | Target theo master prompt           | Ghi chú                                                  |
+| --------------- | ----------------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| Framework       | Next.js 16.3.5                      | Next.js App Router                  | Đã scaffold và build pass                                |
+| Language        | TypeScript 5.9.3 strict             | TypeScript strict                   | `tsconfig.json` đã được Next.js hoàn thiện               |
+| UI              | NOT FOUND                           | Ant Design                          | Dùng cho dashboard/shared UI                             |
+| Server state    | NOT FOUND                           | TanStack Query                      | Chủ yếu cho client interactions                          |
+| Form/validation | NOT FOUND                           | React Hook Form + Zod               | Backend vẫn là nơi validate cuối                         |
+| ORM/database    | Prisma 7.10.0 + schema              | Prisma + MySQL 8                    | Migration/seed/session đã tạo; đã verify temporary MySQL |
+| Cache/infra     | Redis client + login rate limit     | Redis                               | Không dùng thay cho nguồn dữ liệu chính                  |
+| Tests           | Vitest + auth/authz/API route tests | Vitest, Testing Library, Playwright | Component/E2E chưa có                                    |
+| Package manager | pnpm 12.4.1                         | pnpm                                | `pnpm-lock.yaml` đã tạo                                  |
+| Delivery        | NOT FOUND                           | Docker + CI/CD                      | Chưa có Dockerfile, Compose hay workflow                 |
 
 ### 3.4 Repository structure audit
 
@@ -65,8 +65,13 @@ Do repository chưa có business brief, tên dự án và domain thương mại 
 | `docs/tasks/PHASE-00-DISCOVERY.md`      | CREATED   | Task register Phase 00                            |
 | `docs/tasks/PHASE-03-AUTHENTICATION.md` | CREATED   | Task register Phase 03                            |
 | `docs/tasks/PHASE-04-AUTHORIZATION.md`  | CREATED   | Task register Phase 04                            |
+| `docs/tasks/PHASE-05-BACKEND-API.md`    | CREATED   | Task register Phase 05                            |
 | `package.json`                          | PRESENT   | Foundation scripts/dependencies                   |
 | `src/`                                  | PRESENT   | App Router, foundation, auth/authz routes/modules |
+| `src/app/api/v1/`                       | PRESENT   | Auth, Product, User, Role, Permission API routes  |
+| `src/server/api/`                       | PRESENT   | Query/payload schema và route response helpers    |
+| `src/server/services/`                  | PRESENT   | Product/User/Role/Permission use cases            |
+| `src/server/repositories/`              | PRESENT   | Prisma data access và public field selections     |
 | `prisma/`                               | PRESENT   | Schema, migrations, seed và Session model         |
 | `public/`                               | NOT FOUND | Chưa có public assets                             |
 | `tests/`                                | PRESENT   | Vitest auth/authz unit và route tests             |
@@ -105,7 +110,25 @@ trả `401` cho anonymous và `403` cho user thiếu quyền qua centralized err
 
 ### 3.8 API
 
-Target API version là `/api/v1/...`, response có format success/list/error thống nhất, có validation, auth, authorization, trace ID và centralized error handling. Route Handler không chứa business logic lớn; flow chuẩn là request → parse/validate → auth → authorization → service → repository → response.
+P05 đã triển khai API version `/api/v1/...` cho auth, Product, User, Role và Permission. Response dùng
+format success/list/error thống nhất; backend validate bằng Zod; Route Handler enforce authentication và
+permission trước khi gọi service/repository; lỗi có `traceId`, `timestamp`, `path` và không serialize
+stack/SQL/secret. Flow chuẩn là request → parse/validate → auth → authorization → service → repository
+→ response.
+
+| Resource   | Endpoints đã triển khai                           | Capability chính                                             |
+| ---------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| Auth       | `/api/v1/auth/login`, `/logout`, `/me`            | Session web-first                                            |
+| Product    | `/api/v1/products`, `/api/v1/products/[id]`       | List/detail/create/update/archive                            |
+| User       | `/api/v1/users`, `/api/v1/users/[id]`             | List/detail/create/update/status/role assignment/soft delete |
+| Role       | `/api/v1/roles`, `/api/v1/roles/[id]`             | List/detail/create/update/delete/permission assignment       |
+| Permission | `/api/v1/permissions`, `/api/v1/permissions/[id]` | List/detail từ catalog database                              |
+
+List API có pagination (`page`, `pageSize`, mặc định `1/20`, tối đa `100`), search, filter theo resource
+và sort whitelist với `sortOrder` `asc|desc`. Product hỗ trợ filter `status`/`visibility`; User hỗ trợ
+filter `status`; Role/Permission hỗ trợ search. Query key generic `filter` được master prompt nêu nhưng
+chưa có encoding/grammar; P05 giữ typed filters để tránh tự ý chốt syntax, cần quyết định trước khi mở
+filter động.
 
 ### 3.9 Frontend
 
@@ -118,10 +141,10 @@ Public content phải server-rendered/indexable, semantic, có Metadata API, can
 ### 3.11 Testing
 
 P03 đã thêm Vitest với unit/route tests cho password, opaque token và authentication contract; P04 bổ sung
-authorization service/helper/403 tests. Target test
-strategy vẫn gồm component (Testing Library), integration/API và E2E (Playwright), với coverage mở rộng
-cho authorization, product CRUD/validation/pagination/sorting/filtering và security non-exposure.
-Typecheck, lint, format check, test và production build cần tiếp tục là quality gates của mỗi phase.
+authorization service/helper/403 tests; P05 bổ sung API route/response tests và runtime smoke test trên
+MySQL 8 + Redis. Hiện `pnpm test` pass 25 tests. Target test strategy vẫn gồm component (Testing Library),
+integration/API và E2E (Playwright), với coverage mở rộng cho dashboard và security. Typecheck, lint,
+format check, test và production build là quality gates của mỗi phase.
 
 ### 3.12 Docker
 
@@ -146,10 +169,13 @@ Mục tiêu baseline cần xác nhận:
 
 - Authentication: login, logout, current user (`me`), opaque DB session lifecycle và Redis login rate limit (P03 đã implement).
 - Authorization: User/Role/Permission, RBAC, server guards và deny-by-default checks (P04 đã implement).
-- Product catalog: list/detail/create/update/delete với pagination, sorting, filtering, search foundation.
-- User management: list/detail/create/update/status/assign role, không expose secret fields.
-- Role/permission management theo quyền được cấp.
-- API `/api/v1` với validation, response/error contract và observability foundation.
+- Product catalog: list/detail/create/update/archive với pagination, sorting, filtering, search foundation
+  (P05 đã implement; product business policy vẫn provisional).
+- User management: list/detail/create/update/status/assign role/soft delete, không expose secret fields
+  (P05 đã implement).
+- Role/permission management theo quyền được cấp (P05 đã implement list/detail/CRUD cần thiết).
+- API `/api/v1` với validation, response/error contract, traceability và server-side authorization
+  (P05 đã implement).
 - Public SEO shell và private dashboard `noindex`.
 - Quality baseline: strict TypeScript, lint/format, tests, security headers, rate-limit abstraction, health check, Docker và CI theo các phase sau.
 
@@ -192,6 +218,7 @@ src/server/services/    business orchestration
 src/server/repositories/ data access
 src/server/auth/        session/authentication
 src/server/authorization/ permission checks
+src/server/api/           schemas, pagination và response adapters
 src/lib/                db, redis, validation, api, security utilities
 prisma/                 schema, migrations, seed
 tests/                  unit, integration, e2e
@@ -236,15 +263,18 @@ Các SLO, latency budget, traffic target, retention và backup/RTO/RPO chưa có
 
 ## 9. Decision log
 
-| ID        | Quyết định                                         | Trạng thái                                                | Lý do                                                                                |
-| --------- | -------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| ADR-00-01 | Chọn Next.js Fullstack Modular Monolith            | Đã xác nhận theo master                                   | Một deployable boundary, module rõ và ít overhead vận hành                           |
-| ADR-00-02 | Server Component là mặc định                       | Đã xác nhận theo master                                   | SEO, performance và giảm client JS                                                   |
-| ADR-00-03 | MySQL 8 + Prisma                                   | Đã xác nhận theo master                                   | Consistent persistence foundation                                                    |
-| ADR-00-04 | RBAC + permission checks ở backend                 | Đã xác nhận theo master                                   | Security boundary không phụ thuộc frontend                                           |
-| ADR-00-05 | Product catalog là domain foundation               | Đã xác nhận theo master, business meaning còn provisional | Có yêu cầu Product CRUD/API rõ trong master                                          |
-| ADR-00-06 | Không tạo application code ở Phase 00              | Quyết định phase                                          | Chưa có requirement business đủ rõ và user yêu cầu discovery trước                   |
-| ADR-01-01 | Dùng package slug lowercase `nextjs-fullstack-app` | Foundation implementation                                 | Tên thư mục hiện hữu có chữ hoa và không được đổi; package name phải hợp lệ theo npm |
+| ID        | Quyết định                                               | Trạng thái                                                | Lý do                                                                                |
+| --------- | -------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| ADR-00-01 | Chọn Next.js Fullstack Modular Monolith                  | Đã xác nhận theo master                                   | Một deployable boundary, module rõ và ít overhead vận hành                           |
+| ADR-00-02 | Server Component là mặc định                             | Đã xác nhận theo master                                   | SEO, performance và giảm client JS                                                   |
+| ADR-00-03 | MySQL 8 + Prisma                                         | Đã xác nhận theo master                                   | Consistent persistence foundation                                                    |
+| ADR-00-04 | RBAC + permission checks ở backend                       | Đã xác nhận theo master                                   | Security boundary không phụ thuộc frontend                                           |
+| ADR-00-05 | Product catalog là domain foundation                     | Đã xác nhận theo master, business meaning còn provisional | Có yêu cầu Product CRUD/API rõ trong master                                          |
+| ADR-00-06 | Không tạo application code ở Phase 00                    | Quyết định phase                                          | Chưa có requirement business đủ rõ và user yêu cầu discovery trước                   |
+| ADR-01-01 | Dùng package slug lowercase `nextjs-fullstack-app`       | Foundation implementation                                 | Tên thư mục hiện hữu có chữ hoa và không được đổi; package name phải hợp lệ theo npm |
+| ADR-05-01 | API response/error contract dùng helper tập trung        | Đã implement ở P05                                        | Giữ format ổn định, traceability và không leak lỗi nội bộ giữa các resource          |
+| ADR-05-02 | Pagination/sort/filter validate và whitelist ở server    | Đã implement ở P05                                        | Không cho client đưa field tùy ý vào Prisma order/filter                             |
+| ADR-05-03 | Product delete và User delete dùng soft-delete/lifecycle | Đã implement ở P05                                        | Bảo toàn dữ liệu baseline và revoke session khi user bị xóa                          |
 
 ## 10. Phase dependency và implementation plan
 
@@ -264,16 +294,16 @@ P07 SEO + P08 Testing + P09 Security
 P10 Docker -> P11 CI/CD -> P12 Final Review
 ```
 
-P01-T01, P02, P03 và P04 đã được thực hiện trên provisional baseline sau khi review open questions. Các câu hỏi
-business vẫn là dependency trước public launch; session strategy đã có quyết định kỹ thuật tạm thời cho
-web-only MVP nhưng vẫn phải revisit nếu xuất hiện client ngoài web.
+P01-T01, P02, P03, P04 và P05 đã được thực hiện trên provisional baseline sau khi review open questions.
+Các câu hỏi business vẫn là dependency trước public launch; session strategy đã có quyết định kỹ thuật
+tạm thời cho web-only MVP nhưng vẫn phải revisit nếu xuất hiện client ngoài web.
 
 ## 11. Technical debt và rủi ro hiện tại
 
 | Mức độ | Vấn đề                                                                         | Impact                                                                                   | Hướng xử lý                                                            |
 | ------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | High   | Chưa có product brief/project name                                             | Có thể xây sai domain, copy và route                                                     | Product owner xác nhận trước khi khóa foundation                       |
-| High   | Chưa có API/feature implementation                                             | Product chưa thể release                                                                 | Tiếp tục P05/P06 theo dependency                                       |
+| High   | Chưa có feature UI/public IA                                                   | Product chưa thể release                                                                 | Tiếp tục P06/P07 theo dependency                                       |
 | High   | Role matrix chi tiết và product proposition chưa sign-off                      | Ảnh hưởng authorization, UX và public scope                                              | Chốt ở P05/P07 trước release                                           |
 | Medium | Chưa có hosting, domain, traffic và SLO                                        | Không thể chốt deployment/performance budget                                             | Bổ sung trước Docker/CI/production review                              |
 | Medium | `AI_MASTER_PROMPT.md` kết thúc bằng câu chưa hoàn chỉnh                        | Tài liệu master có lỗi biên tập                                                          | Tạo documentation maintenance task; không tự sửa master trong Phase 00 |
@@ -297,7 +327,7 @@ web-only MVP nhưng vẫn phải revisit nếu xuất hiện client ngoài web.
 
 ## 13. Definition of ready cho các phase kế tiếp
 
-Trước P05/P06 và trước khi khóa public product scope, tối thiểu phải có:
+Trước P06 và trước khi khóa public product scope, tối thiểu phải có:
 
 - [ ] Product name hoặc quyết định rõ placeholder được dùng đến khi nào.
 - [ ] Product proposition và MVP audience được product owner xác nhận hoặc ghi accepted provisional.
@@ -306,5 +336,7 @@ Trước P05/P06 và trước khi khóa public product scope, tối thiểu ph�
 - [ ] Product field/status/visibility baseline được product owner sign-off.
 - [x] Session strategy web-only được chọn và ghi rõ trong P03; refresh-token strategy được đánh dấu skip có điều kiện.
 - [x] Authorization baseline `requireAuth`/`requirePermission`, 401/403 contract và deny-by-default đã được triển khai ở P04.
+- [x] API response/error contract, validation, pagination, sorting, filtering và resource routes đã được triển khai ở P05.
+- [x] `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test` và `pnpm build` đã pass sau P05.
 - [ ] Open question nào chưa chốt phải có owner, impact và phase xử lý.
 - [ ] `docs/01_PRODUCT_REQUIREMENTS.md`, `docs/PROGRESS.md` và Phase 00 task file nhất quán.

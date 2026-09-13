@@ -1,0 +1,62 @@
+import { apiInvalidJson, apiRouteError, apiValidationError } from "@/server/api/route";
+import { resourceIdSchema, productUpdateSchema } from "@/server/api/schemas";
+import { apiSuccess } from "@/lib/api/response";
+import { PERMISSIONS } from "@/server/authorization/permissions";
+import { requirePermission } from "@/server/authorization/service";
+import {
+  archiveProductService,
+  getProductService,
+  updateProductService,
+} from "@/server/services/product.service";
+
+const PATH = "/api/v1/products/[id]";
+type RouteContext = { readonly params: Promise<{ readonly id: string }> };
+
+async function parseId(context: RouteContext): Promise<string | Response> {
+  const { id } = await context.params;
+  const parsed = resourceIdSchema.safeParse(id);
+  return parsed.success ? parsed.data : apiValidationError(PATH, parsed.error);
+}
+
+export async function GET(_request: Request, context: RouteContext): Promise<Response> {
+  try {
+    const id = await parseId(context);
+    if (id instanceof Response) return id;
+    await requirePermission(PERMISSIONS.PRODUCT_VIEW);
+    return apiSuccess(await getProductService(id));
+  } catch (error) {
+    return apiRouteError(PATH, error);
+  }
+}
+
+export async function PATCH(request: Request, context: RouteContext): Promise<Response> {
+  const id = await parseId(context);
+  if (id instanceof Response) return id;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return apiInvalidJson(PATH);
+  }
+  const parsed = productUpdateSchema.safeParse(body);
+  if (!parsed.success) return apiValidationError(PATH, parsed.error);
+
+  try {
+    await requirePermission(PERMISSIONS.PRODUCT_UPDATE);
+    return apiSuccess(await updateProductService(id, parsed.data));
+  } catch (error) {
+    return apiRouteError(PATH, error);
+  }
+}
+
+export async function DELETE(_request: Request, context: RouteContext): Promise<Response> {
+  try {
+    const id = await parseId(context);
+    if (id instanceof Response) return id;
+    await requirePermission(PERMISSIONS.PRODUCT_DELETE);
+    return apiSuccess(await archiveProductService(id));
+  } catch (error) {
+    return apiRouteError(PATH, error);
+  }
+}
