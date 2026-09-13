@@ -1,0 +1,83 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f7fb;
+  color: #172033;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.foundation-page {
+  display: grid;
+  min-height: 100vh;
+  place-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.foundation-page h1,
+.foundation-page p {
+  margin: 0;
+}
+
+.foundation-page h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: -0.04em;
+}
+
+.foundation-page p:not(.eyebrow) {
+  max-width: 42rem;
+  color: #536078;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  color: #3156d3;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.error-page {
+  display: grid;
+  min-height: 100vh;
+  place-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-page h1,
+.error-page p {
+  margin: 0;
+}
+
+.error-page p:not(.eyebrow) {
+  max-width: 32rem;
+  color: #536078;
+  line-height: 1.6;
+}
+
+.error-page button {
+  border: 0;
+  border-radius: 0.5rem;
+  background: #3156d3;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.7rem 1rem;
+}
+
+.error-page button:focus-visible {
+  outline: 3px solid #9eb1ff;
+  outline-offset: 2px;
+}

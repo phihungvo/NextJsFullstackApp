@@ -1,0 +1,8 @@
+docs/AI_MASTER_PROMPT.md
+docs/AI_START_PROMPT.md
+.next
+node_modules
+out
+build
+coverage
+pnpm-lock.yaml
