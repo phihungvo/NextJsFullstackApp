@@ -316,7 +316,7 @@ MVP chỉ được xem là product-ready khi tất cả mục sau được xác 
 - [x] Product CRUD, validation, duplicate/not-found, pagination, sorting và filtering đã test ở route/runtime scope; E2E còn chờ P08.
 - [x] User/role/permission management enforce quyền và không expose secret fields ở API/runtime scope.
 - [x] API response/error contract và traceability nhất quán ở API runtime scope.
-- [ ] Public pages có metadata/canonical/social cards/sitemap/robots/structured data phù hợp; dashboard noindex.
+- [x] Public home có metadata/canonical/social cards/sitemap/robots/structured data phù hợp; dashboard noindex; public taxonomy/product routes vẫn chờ sign-off.
 - [x] Loading/empty/error/unauthorized/forbidden/not-found và responsive/accessibility baseline đã review ở implementation baseline P06; browser E2E vẫn thuộc P08.
 - [x] Lint, typecheck, tests, build và Docker verification pass theo scope; CI vẫn thuộc P11.
 - [ ] Security, performance, backup/operational requirements đã có owner và evidence.

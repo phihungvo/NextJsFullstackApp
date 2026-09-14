@@ -58,4 +58,5 @@ Chi tiết kiến trúc, volume, healthcheck, migration và vận hành: `docs/0
 - `docs/tasks/PHASE-00-DISCOVERY.md` — completed discovery task register
 - `docs/tasks/PHASE-05-BACKEND-API.md` — completed backend API task register
 - `docs/tasks/PHASE-06-FRONTEND.md` — completed frontend task register
+- `docs/tasks/PHASE-07-SEO.md` — completed technical SEO task register
 - `docs/tasks/PHASE-10-DOCKER.md` — completed Docker task register

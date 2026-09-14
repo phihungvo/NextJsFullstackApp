@@ -64,7 +64,9 @@ cp docker/.env.prod.example docker/.env.prod
 ```
 
 Sau đó thay `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `DATABASE_URL`, `AUTH_SECRET` và
-`NEXT_PUBLIC_APP_URL`. Password trong `DATABASE_URL` phải URL-encode nếu có ký tự đặc biệt.
+`NEXT_PUBLIC_APP_URL`. `NEXT_PUBLIC_APP_URL` được dùng ở build time để canonical/JSON-LD trong standalone
+bundle trỏ đúng domain; khi đổi domain cần build lại image. Password trong `DATABASE_URL` phải URL-encode
+nếu có ký tự đặc biệt.
 
 Khởi động:
 

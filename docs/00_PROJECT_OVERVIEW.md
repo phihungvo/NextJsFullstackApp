@@ -136,7 +136,10 @@ Server Component là mặc định cho public page và dashboard. Client Compone
 
 ### 3.10 SEO
 
-Public content phải server-rendered/indexable, semantic, có Metadata API, canonical, Open Graph, Twitter metadata, sitemap, robots, structured data khi nội dung phù hợp và internal linking. Private dashboard phải `noindex`. Exact public product/content routes chưa thể chốt khi product proposition chưa được xác nhận.
+P07 đã triển khai technical SEO cho public home `/`: Metadata API, `metadataBase`, canonical, Open Graph,
+Twitter metadata, JSON-LD `WebSite`, `sitemap.ts` và `robots.ts`. Auth/login và private dashboard giữ
+`noindex, nofollow`; API/private paths không nằm trong sitemap. Exact public product/content routes, social
+image assets và structured data chi tiết vẫn chưa thể chốt khi product proposition chưa được xác nhận.
 
 ### 3.11 Testing
 

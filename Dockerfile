@@ -37,9 +37,10 @@ FROM deps AS builder
 COPY . .
 ENV NODE_ENV="production"
 # Route handlers import the validated environment during Next's build-time
-# configuration collection. These are build-only placeholders; Compose injects
-# the real runtime values into the runner container.
-ENV NEXT_PUBLIC_APP_URL="http://localhost:3000"
+# configuration collection. Compose passes the public URL as a build argument so
+# canonical URLs and JSON-LD are correct in the generated standalone bundle.
+ARG NEXT_PUBLIC_APP_URL="http://localhost:3000"
+ENV NEXT_PUBLIC_APP_URL="${NEXT_PUBLIC_APP_URL}"
 ENV REDIS_URL="redis://redis:6379"
 ENV AUTH_SECRET="docker-build-only-secret-change-at-runtime-123456"
 RUN pnpm build

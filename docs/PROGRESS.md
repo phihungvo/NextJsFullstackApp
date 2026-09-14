@@ -4,8 +4,8 @@
 
 - **Project:** Chưa chốt tên chính thức; master prompt vẫn dùng `[PROJECT_NAME]`.
 - **Ngày cập nhật:** 2026-09-14.
-- **Phase hiện tại:** P07 — SEO (**TODO**, phase kế tiếp).
-- **Phase vừa hoàn tất:** P06 — Frontend (**DONE**, P06-T01..P06-T16 đã auto-approved theo yêu cầu).
+- **Phase hiện tại:** P08 — Testing (**TODO**, phase kế tiếp).
+- **Phase vừa hoàn tất:** P07 — SEO (**DONE**, P07-T01..P07-T07 đã auto-approved theo yêu cầu).
 - **P00:** 10 DONE.
 - **P01:** 10 DONE.
 - **P02:** 10 DONE.
@@ -13,6 +13,7 @@
 - **P04:** 8 DONE.
 - **P05:** 10 DONE.
 - **P06:** 16 DONE, 0 TODO, 0 blocked.
+- **P07:** 7 DONE, technical SEO baseline hoàn tất; public taxonomy vẫn chờ product sign-off.
 - **P10:** 9 DONE, completed out-of-order theo yêu cầu Docker.
 
 ## Phase status
@@ -26,7 +27,7 @@
 | P04   | Authorization                  | DONE       | RBAC/permission baseline và backend tests đã pass                  |
 | P05   | Backend API                    | DONE       | API contract, CRUD, validation, pagination/sort/filter đã pass     |
 | P06   | Frontend                       | DONE       | Tất cả 16 task đã implement, verify và AUTO-APPROVED               |
-| P07   | SEO                            | TODO       | Metadata/canonical/social/sitemap/robots/structured data           |
+| P07   | SEO                            | DONE       | Technical SEO baseline; public taxonomy vẫn provisional            |
 | P08   | Testing                        | TODO       | Component/E2E/regression mở rộng theo scope                        |
 | P09   | Security                       | TODO       | Formal security audit                                              |
 | P10   | Docker                         | DONE       | Dev/production Compose, standalone image, migration và healthcheck |
@@ -57,18 +58,21 @@ Chi tiết implementation/acceptance: `docs/tasks/PHASE-06-FRONTEND.md`.
 P10 cũng đã hoàn tất out-of-order: xem `docs/tasks/PHASE-10-DOCKER.md` và
 `docs/09_DOCKER_DEPLOYMENT.md`.
 
-## P06 verification
+P07 cũng đã hoàn tất technical baseline: xem `docs/tasks/PHASE-07-SEO.md`.
+
+## P07 verification
 
 Đã chạy bằng binaries local trong `node_modules/.bin` vì shell hiện không có command `pnpm`:
 
 - Prettier check: **PASS**.
 - ESLint: **PASS**.
 - TypeScript `tsc --noEmit`: **PASS**.
-- Vitest: **PASS** — 7 test files, 25 tests.
-- Next production build: **PASS** — 17 routes generated.
+- Vitest: **PASS** — 8 test files, 28 tests.
+- Next production build: **PASS** — 19 routes generated, gồm `/robots.txt` và `/sitemap.xml`.
+- Runtime SEO smoke: **PASS** — public canonical/OG/Twitter/JSON-LD, sitemap/robots và private noindex.
 
 Route baseline đã có: `/`, `/login`, `/dashboard`, `/dashboard/products`, Product create/update/detail,
-`/dashboard/users`, `/dashboard/roles`, `/dashboard/permissions`.
+`/dashboard/users`, `/dashboard/roles`, `/dashboard/permissions`, `/robots.txt`, `/sitemap.xml`.
 
 ## Các phase trước
 
@@ -103,15 +107,14 @@ questions thành business sign-off ngầm.
 
 ## Việc tiếp theo
 
-**P07-T01 — Global metadata**
+**P08-T01 — Component/E2E test scope**
 
-Rà và hoàn thiện SEO theo public IA đã được product owner xác nhận: page metadata, canonical, Open Graph,
-Twitter Cards, sitemap, robots, structured data và noindex cho private routes. Không tự chốt public
-taxonomy từ các route placeholder khi product decision vẫn mở.
+Mở rộng test strategy từ Vitest route/unit hiện tại sang component, browser và regression coverage theo
+public/private route boundary.
 
 ## Project status note
 
-P00–P06 đã có discovery, foundation, database, authentication, authorization, backend API và frontend
-baseline; P10 Docker đã hoàn tất out-of-order với verification thực tế trên Docker Desktop. Project vẫn
-chưa production-ready vì product sign-off, P07 SEO, P08 testing expansion, P09 formal security, P11 CI/CD
-và P12 final review còn lại.
+P00–P07 đã có discovery, foundation, database, authentication, authorization, backend API, frontend baseline
+và technical SEO; P10 Docker đã hoàn tất out-of-order với verification thực tế trên Docker Desktop. Project
+vẫn chưa production-ready vì product sign-off, P08 testing expansion, P09 formal security, P11 CI/CD và P12
+final review còn lại.
