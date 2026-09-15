@@ -19,6 +19,7 @@ boundary và non-root standalone runtime.
 | P10-T07 | MySQL/Redis/app healthchecks và dependency conditions                       | DONE       |
 | P10-T08 | Migration service riêng, development seed profile và internal network       | DONE       |
 | P10-T09 | Production build, non-root image, runtime smoke và documentation            | DONE       |
+| P10-T10 | IntelliJ một nút: Compose development, Node Inspector và backend breakpoint | DONE       |
 
 ## Thiết kế môi trường
 
@@ -49,6 +50,7 @@ secret manager và monitoring.
 - [x] Development hot reload giữ source mount nhưng không làm bẩn host bằng dependency/build cache.
 - [x] Có named volumes cho development và production data.
 - [x] Có env examples và hướng dẫn vận hành rõ ràng.
+- [x] IntelliJ shared run configuration tuần tự khởi động Compose, chờ Node Inspector và attach backend.
 
 ## Verification evidence
 
@@ -68,6 +70,8 @@ GET /api/health                            HTTP 200
 POST /api/v1/auth/login                    HTTP 200
 GET /api/v1/auth/me                        HTTP 200
 GET /api/v1/products                       HTTP 200
+pnpm docker:debug:backend                  PASS — Inspector target at 127.0.0.1:9229
+Next.js Docker - Debug Backend             READY — shared IntelliJ attach config with /app mapping
 ```
 
 ## Lệnh chính

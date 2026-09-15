@@ -14,25 +14,25 @@
 - **P05:** 10 DONE.
 - **P06:** 16 DONE, 0 TODO, 0 blocked.
 - **P07:** 7 DONE, technical SEO baseline hoàn tất; public taxonomy vẫn chờ product sign-off.
-- **P10:** 9 DONE, completed out-of-order theo yêu cầu Docker.
+- **P10:** 10 DONE, gồm luồng IntelliJ một nút cho backend debugger trong Docker.
 
 ## Phase status
 
-| Phase | Tên                            | Trạng thái | Ghi chú                                                            |
-| ----- | ------------------------------ | ---------- | ------------------------------------------------------------------ |
-| P00   | Discovery & Project Definition | DONE       | Docs-only; product decisions còn provisional                       |
-| P01   | Foundation                     | DONE       | Foundation quality gates đã pass                                   |
-| P02   | Database                       | DONE       | Provisional schema, migration và seed đã verify                    |
-| P03   | Authentication                 | DONE       | Web-only opaque session; refresh token skipped có chủ đích         |
-| P04   | Authorization                  | DONE       | RBAC/permission baseline và backend tests đã pass                  |
-| P05   | Backend API                    | DONE       | API contract, CRUD, validation, pagination/sort/filter đã pass     |
-| P06   | Frontend                       | DONE       | Tất cả 16 task đã implement, verify và AUTO-APPROVED               |
-| P07   | SEO                            | DONE       | Technical SEO baseline; public taxonomy vẫn provisional            |
-| P08   | Testing                        | TODO       | Component/E2E/regression mở rộng theo scope                        |
-| P09   | Security                       | TODO       | Formal security audit                                              |
-| P10   | Docker                         | DONE       | Dev/production Compose, standalone image, migration và healthcheck |
-| P11   | CI/CD                          | TODO       | Pipeline quality gates                                             |
-| P12   | Final Review                   | TODO       | Chỉ DONE khi toàn bộ acceptance đạt                                |
+| Phase | Tên                            | Trạng thái | Ghi chú                                                              |
+| ----- | ------------------------------ | ---------- | -------------------------------------------------------------------- |
+| P00   | Discovery & Project Definition | DONE       | Docs-only; product decisions còn provisional                         |
+| P01   | Foundation                     | DONE       | Foundation quality gates đã pass                                     |
+| P02   | Database                       | DONE       | Provisional schema, migration và seed đã verify                      |
+| P03   | Authentication                 | DONE       | Web-only opaque session; refresh token skipped có chủ đích           |
+| P04   | Authorization                  | DONE       | RBAC/permission baseline và backend tests đã pass                    |
+| P05   | Backend API                    | DONE       | API contract, CRUD, validation, pagination/sort/filter đã pass       |
+| P06   | Frontend                       | DONE       | Tất cả 16 task đã implement, verify và AUTO-APPROVED                 |
+| P07   | SEO                            | DONE       | Technical SEO baseline; public taxonomy vẫn provisional              |
+| P08   | Testing                        | TODO       | Component/E2E/regression mở rộng theo scope                          |
+| P09   | Security                       | TODO       | Formal security audit                                                |
+| P10   | Docker                         | DONE       | Dev/production Compose, inspector IntelliJ, migration và healthcheck |
+| P11   | CI/CD                          | TODO       | Pipeline quality gates                                               |
+| P12   | Final Review                   | TODO       | Chỉ DONE khi toàn bộ acceptance đạt                                  |
 
 ## P06 — Frontend đã hoàn tất
 
@@ -55,8 +55,8 @@
 
 Chi tiết implementation/acceptance: `docs/tasks/PHASE-06-FRONTEND.md`.
 
-P10 cũng đã hoàn tất out-of-order: xem `docs/tasks/PHASE-10-DOCKER.md` và
-`docs/09_DOCKER_DEPLOYMENT.md`.
+P10 cũng đã hoàn tất out-of-order, gồm debugger backend Docker một nút trên IntelliJ: xem
+`docs/tasks/PHASE-10-DOCKER.md`, `docs/09_DOCKER_DEPLOYMENT.md` và `docs/10_INTELLIJ_DEBUGGING.md`.
 
 P07 cũng đã hoàn tất technical baseline: xem `docs/tasks/PHASE-07-SEO.md`.
 
@@ -115,6 +115,6 @@ public/private route boundary.
 ## Project status note
 
 P00–P07 đã có discovery, foundation, database, authentication, authorization, backend API, frontend baseline
-và technical SEO; P10 Docker đã hoàn tất out-of-order với verification thực tế trên Docker Desktop. Project
-vẫn chưa production-ready vì product sign-off, P08 testing expansion, P09 formal security, P11 CI/CD và P12
-final review còn lại.
+và technical SEO; P10 Docker đã hoàn tất out-of-order với verification thực tế trên Docker Desktop, gồm
+IntelliJ backend debugging. Project vẫn chưa production-ready vì product sign-off, P08 testing expansion,
+P09 formal security, P11 CI/CD và P12 final review còn lại.

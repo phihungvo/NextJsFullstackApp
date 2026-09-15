@@ -11,7 +11,9 @@ coverage/
 *.log
 *.tsbuildinfo
 .DS_Store
+.idea
 
 /src/generated/prisma
 docker/.env.dev
 docker/.env.prod
+docs/learning/

@@ -67,6 +67,9 @@ services:
       SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-development-user-password}
     ports:
       - "${APP_PORT:-3000}:3000"
+      # Node Inspector is available only from this machine. IntelliJ attaches
+      # through the host port; application source remains bind-mounted at /app.
+      - "127.0.0.1:${DEBUG_PORT:-9229}:9229"
     volumes:
       - .:/app
       - node_modules_dev:/app/node_modules
@@ -79,7 +82,7 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-    command: ["sh", "-c", "pnpm db:generate && pnpm dev"]
+    command: ["sh", "-c", "pnpm db:generate && pnpm dev --inspect=0.0.0.0:9229"]
     healthcheck:
       test:
         - CMD-SHELL

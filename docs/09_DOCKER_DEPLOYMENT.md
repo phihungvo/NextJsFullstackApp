@@ -45,15 +45,19 @@ docker compose --env-file docker/.env.dev.example -f docker-compose.yml ps
 
 Development host ports:
 
-| Service |   Host | Container |
-| ------- | -----: | --------: |
-| App     | `3000` |    `3000` |
-| MySQL   | `3307` |    `3306` |
-| Redis   | `6380` |    `6379` |
+| Service        |   Host | Container |
+| -------------- | -----: | --------: |
+| App            | `3000` |    `3000` |
+| Node Inspector | `9229` |    `9229` |
+| MySQL          | `3307` |    `3306` |
+| Redis          | `6380` |    `6379` |
 
 Source được mount vào `/app`; `node_modules`, `.next` và Prisma client generated dùng named volume để
 không làm bẩn máy host. Migrations chạy tự động mỗi lần Compose tạo `migrate` service; seed không chạy
 tự động để tránh ghi dữ liệu ngoài ý muốn.
+
+Node Inspector chỉ publish lên `127.0.0.1`, không mở ra LAN. Để khởi động Docker và attach backend
+debugger IntelliJ bằng một nút, xem `docs/10_INTELLIJ_DEBUGGING.md`.
 
 ## Production-like local run
 

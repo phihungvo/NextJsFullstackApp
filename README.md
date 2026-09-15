@@ -50,6 +50,8 @@ npm run docker:prod
 
 Chi tiết kiến trúc, volume, healthcheck, migration và vận hành: `docs/09_DOCKER_DEPLOYMENT.md`.
 
+Debug backend Next.js trong Docker bằng một nút IntelliJ: `docs/10_INTELLIJ_DEBUGGING.md`.
+
 ## Documentation
 
 - `docs/00_PROJECT_OVERVIEW.md` — discovery, architecture and constraints
